@@ -33,18 +33,31 @@ namespace RaiditeServer.Controllers
         // et le post lui-même.
         [HttpPost("{hubId}")]
         [Authorize]
-        public async Task<ActionResult<PostDisplayDTO>> PostPost(int hubId, PostDTO postDTO)
+        public async Task<ActionResult<PostDisplayDTO>> PostPost()
         {
+            string id = Request.Form["hubId"];
+            string title = Request.Form["postTitle"];
+            string text = Request.Form["postText"];
+
+            if (title == null)
+                return BadRequest(new { Message = "Il manque de title dans post!" });
+            else if (title.Length > 200)
+            {
+                return BadRequest(new { Message = "Te title est trop long!" });
+            }
+
             User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             if (user == null) return Unauthorized();
+
+            int hubId = int.Parse(id);
 
             Hub? hub = await _hubService.GetHub(hubId);
             if (hub == null) return NotFound();
 
-            Comment? mainComment = await _commentService.CreateComment(user, postDTO.Text, null);
+            Comment? mainComment = await _commentService.CreateComment(user, text, null);
             if (mainComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
-            Post? post = await _postService.CreatePost(postDTO.Title, hub, mainComment);
+            Post? post = await _postService.CreatePost(title, hub, mainComment);
             if (post == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             bool voteToggleSuccess = await _commentService.UpvoteComment(mainComment.Id, user);

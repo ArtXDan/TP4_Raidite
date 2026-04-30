@@ -27,16 +27,22 @@ export function usePost() {
     // Créer une publication
     async function postPost(hubId: string, postTitle : string, postText : string) {
 
-        const postDTO = {
-            title : postTitle,
-            text : postText
-        };
+        const formData = new FormData();
 
-        const x = await raidite.post(apiDomain + "api/Posts/PostPost/" + hubId, postDTO);
+        const hub : string  = hubId;
+        
+        const title : string | null = postTitle;
+
+        const text : string | null = postText;
+
+        formData.append("hubId", hub)
+        formData.append("postTitle", title)
+        formData.append("postText", text)
+
+        const x = await raidite.post(apiDomain + "api/Posts/PostPost/" + hubId, formData);
         console.log(x.data);
 
         return x.data;
-
     }
 
     // Obtenir une publication et ses commentaires
