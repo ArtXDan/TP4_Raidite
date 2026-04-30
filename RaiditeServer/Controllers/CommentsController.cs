@@ -1,12 +1,16 @@
 ﻿
+using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RaiditeServer.Data;
 using RaiditeServer.DTOs;
 using RaiditeServer.Models;
 using RaiditeServer.Services;
-using System.Security.Claims;
-using System.Text.RegularExpressions;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace RaiditeServer.Controllers
 {
@@ -18,28 +22,71 @@ namespace RaiditeServer.Controllers
         private readonly PostService _postService;
         private readonly CommentService _commentService;
         private readonly PictureService _pictureService;
+        private readonly RaiditeServerContext _context;
 
-        public CommentsController(UserManager<User> userManager, PostService postService, CommentService commentService, PictureService pictureService)
+        public CommentsController(UserManager<User> userManager, PostService postService, CommentService commentService, PictureService pictureService,RaiditeServerContext context)
         {
             _userManager = userManager;
             _postService = postService;
             _commentService = commentService;
             _pictureService = pictureService;
+            _context = context;
         }
 
         // Créer un nouveau commentaire. (Ne permet pas de créer le commentaire principal d'un post, pour cela,
         // voir l'action PostPost dans PostsController)
         [HttpPost("{parentCommentId}")]
         [Authorize]
-        public async Task<ActionResult<CommentDisplayDTO>> PostComment(int parentCommentId, CommentDTO commentDTO)
+        public async Task<ActionResult<CommentDisplayDTO>> PostComment(int parentCommentId)
         {
+
             User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             if (user == null) return Unauthorized();
 
             Comment? parentComment = await _commentService.GetComment(parentCommentId);
             if (parentComment == null || parentComment.User == null) return BadRequest();
 
-            Comment? newComment = await _commentService.CreateComment(user, commentDTO.Text, parentComment);
+            List<Picture> listeImage = new List<Picture>();
+            try
+            {
+                //Réception du formData
+                IFormCollection formCollection = await Request.ReadFormAsync();
+                foreach (IFormFile f in formCollection.Files)
+                {
+                    Image image = Image.Load(f.OpenReadStream());
+
+                    if (f == null) return BadRequest(new { Message = "Fournis une image, niochon" });
+
+                    Picture picture = new Picture
+                    {
+                        Id = 0,
+                        FileName = Guid.NewGuid().ToString() + Path.GetExtension(f.FileName),
+                        MimeType = f.ContentType
+                    };
+
+                    // Sauvegarde de l'image dans le dossier images/grande
+                    image.Save(Directory.GetCurrentDirectory() + "/images/grande/" + picture.FileName);
+
+                    // Sauvegarde d'une version petite de l'image dans le dossier images/petite
+                    image.Mutate(i => i.Resize(
+                        new ResizeOptions() { Mode = ResizeMode.Min, Size = new Size() { Height = 200 } }));
+                    image.Save(Directory.GetCurrentDirectory() + "/images/petite/" + picture.FileName);
+
+                    _context.Picture.Add(picture);
+                    await _context.SaveChangesAsync();
+
+                   listeImage.Add(picture);
+
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            string? texteCommentaire = Request.Form["commentText"];
+
+            Comment? newComment = await _commentService.CreateComment(user, texteCommentaire, parentComment,listeImage);
             if (newComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             bool voteToggleSuccess = await _commentService.UpvoteComment(newComment.Id, user);

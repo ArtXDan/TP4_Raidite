@@ -23,7 +23,7 @@ namespace RaiditeServer.Services
 
         // Créer un commentaire (possiblement le commentaire principal d'un post, mais pas forcément)
         // Un commentaire parent peut être fourni si le commentaire créé est un sous-commentaire
-        public async Task<Comment?> CreateComment(User user, string text, Comment? parentComment)
+        public async Task<Comment?> CreateComment(User user, string text, Comment? parentComment, List<Picture> liste)
         {
             if (IsContextNull()) return null;
 
@@ -34,6 +34,7 @@ namespace RaiditeServer.Services
                 Date = DateTime.UtcNow,
                 User = user, // Auteur
                 ParentComment = parentComment, // null si commentaire principal du post
+                Pictures = liste
             };
 
             _context.Comment.Add(newComment);

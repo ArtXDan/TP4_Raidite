@@ -22,4 +22,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="images\grande\" />
+    <Folder Include="images\petite\" />
+  </ItemGroup>
+
 </Project>

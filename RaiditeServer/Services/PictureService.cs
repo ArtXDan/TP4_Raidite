@@ -17,6 +17,24 @@ namespace RaiditeServer.Services
 
         private bool IsContextNull() => _context == null || _context.Picture == null;
 
+
+
+        public async Task<Picture> CreatePicture(string filename, string mimeType) 
+        {
+            if (IsContextNull()) return null;
+
+            Picture nouvelleImage = new Picture();
+            nouvelleImage.FileName = filename;
+            nouvelleImage.MimeType = mimeType;
+
+            _context.Picture.Add(nouvelleImage);
+            await _context.SaveChangesAsync();
+
+            return nouvelleImage;
+        }
+
+
+
         public async Task<Picture?> GetPicture(int id)
         {
             if (IsContextNull()) return null;

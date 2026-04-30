@@ -1,5 +1,7 @@
 import { apiDomain } from "@/next.config";
 import { raidite } from "../raidite-interceptor";
+import { FileInput } from "lucide-react";
+import { RefObject } from "react";
 
 export function useComment(){
 
@@ -20,13 +22,33 @@ export function useComment(){
     }
 
     // Créer un commentaire
-    async function postComment(parentCommentId : number, commentText : string){
+    async function postComment(parentCommentId : number, commentText : string, monFileInput : RefObject<HTMLInputElement | null>){
 
-        const commentDTO = {
-            text : commentText
+        //Vérification de la référence vers le input
+        if(monFileInput.current == null){
+            console.log("Référence vide ou élément HTML non visible dans la page.");
+            return;
         }
 
-        const x = await raidite.post(apiDomain + "api/Comments/PostComment/" + parentCommentId, commentDTO);
+        //Véréfication pour savoir si l'input contient des fichiers
+        if(monFileInput.current.files == null){
+            console.log("L'input ne contient aucun fichier");
+            return;
+        }
+
+        //On ajoute les images dans le formdata
+        const formdata = new FormData();
+        let i = 1;
+        for(let e of monFileInput.current.files)
+        {
+            formdata.append("image"+i,e);
+            i++;
+        }
+
+        //Ajout du texte au formdata
+        formdata.append("commentText",commentText);
+
+        const x = await raidite.post(apiDomain + "api/Comments/PostComment/" + parentCommentId, formdata);
         console.log(x.data);
 
         return x.data;

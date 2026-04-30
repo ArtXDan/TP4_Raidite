@@ -11,6 +11,9 @@ import { AccountContext } from "../(home)/layout";
 
 export default function Reply(props: { parentCommentId: number }) {
 
+    //FileInput
+    const MonFileInput = useRef<HTMLInputElement>(null);
+
     // Hooks
     const commentAPI = useComment();
     const router = useRouter();
@@ -43,7 +46,7 @@ export default function Reply(props: { parentCommentId: number }) {
 
         try {
             // Lancement de la requête
-            const newComment: Comment = await commentAPI.postComment(props.parentCommentId, text);
+            const newComment: Comment = await commentAPI.postComment(props.parentCommentId, text, MonFileInput);
 
             // Code pour mettre à jour la page automatiquement (ajouter le commentaire dans la page)
             const editedPost : Post = {...post};
@@ -84,7 +87,7 @@ export default function Reply(props: { parentCommentId: number }) {
                 
                 {toggleFile &&
                     <div className="bg-gray-200 hover:bg-gray-300 rounded-full flex items-center">
-                        <input type="file" multiple accept="image/*" />
+                        <input type="file" multiple ref={MonFileInput} accept="image/*" />
                     </div>
                 }
 
