@@ -27,6 +27,12 @@ namespace RaiditeServer.Services
         {
             if (IsContextNull()) return null;
 
+            List<int> listeID = new List<int>();
+            foreach (var picture in liste) 
+            {
+                listeID.Add(picture.Id);
+            }
+
             Comment newComment = new Comment()
             {
                 Id = 0,
@@ -34,7 +40,8 @@ namespace RaiditeServer.Services
                 Date = DateTime.UtcNow,
                 User = user, // Auteur
                 ParentComment = parentComment, // null si commentaire principal du post
-                Pictures = liste
+                Pictures = liste,
+                ListeIdsImages = listeID
             };
 
             _context.Comment.Add(newComment);

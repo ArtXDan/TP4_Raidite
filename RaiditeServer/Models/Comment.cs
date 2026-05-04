@@ -33,6 +33,8 @@ namespace RaiditeServer.Models
 
         public virtual List<Picture> Pictures { get; set; } = new List<Picture>();
 
+        public virtual List<int> ListeIdsImages { get; set; } = new List<int> { };
+
 
 
         public int GetSubCommentTotal()

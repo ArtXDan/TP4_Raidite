@@ -84,6 +84,8 @@ namespace RaiditeServer.Controllers
                 throw;
             }
 
+            
+
             string? texteCommentaire = Request.Form["commentText"];
 
             Comment? newComment = await _commentService.CreateComment(user, texteCommentaire, parentComment,listeImage);
@@ -141,6 +143,23 @@ namespace RaiditeServer.Controllers
 
             return Ok(new { Message = "Vote complété." });
         }
+
+
+        [HttpGet("{size}/{id}")]
+        public async Task<ActionResult> GetPicture(string size, int id)
+        {
+            Picture? image = await _context.Picture.FindAsync(id);
+            if (image == null) return NotFound();
+
+            // On vérifie si la taille est grande ou petite, sinon on envoie une erreure
+            if (!Regex.Match(size, "petite|grande").Success) return BadRequest(new { Message = "La taille demandée n'existe pas." });
+
+            // On récupère l'image
+            byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/" + size + "/" + image.FileName);
+            return File(bytes, image.MimeType);
+        }
+
+
 
         // Supprimer un commentaire.
         // S'il possède des sous-commentaires -> Il sera soft-delete pour préserver les sous-commentaires.

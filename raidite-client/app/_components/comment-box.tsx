@@ -32,7 +32,7 @@ export default function CommentBox(props: { comment: Comment, isSubComment: bool
     async function deleteComment() {
 
         await commentAPI.deleteComment(comment.id);
-        setComment(new Comment(0, "Commentaire supprimé.", new Date(), null, 0, 0, false, false, comment.subCommentTotal, comment.isAuthor, comment.subComments));
+        setComment(new Comment(0, "Commentaire supprimé.", new Date(), null, 0, 0, false, false, comment.subCommentTotal, comment.isAuthor, comment.subComments,comment.listeIdsImages));
 
     }
 
@@ -172,13 +172,12 @@ export default function CommentBox(props: { comment: Comment, isSubComment: bool
                             <div className="py-1">{comment.text}</div>
                         }
                         <div className="overflow-x-auto overflow-y-clip w-full whitespace-nowrap">
-                            {/*
-                                ⛔ À compléter pour l'affichage des images
+                            {
+                                /*⛔ À compléter pour l'affichage des images*/
 
-                                comment.IDS_DES_IMAGES.map(█ =>   
-                                    <img src="" alt="Image" className="h-[100px] inline mr-1" />
+                                comment.listeIdsImages.map((i) => <img src={'https://localhost:7127/api/Comments/GetPicture/petite/'+ i} key={i} alt="Image" className="h-[100px] inline mr-1" />
                                 )
-                            */}
+                            }
 
                             {/* 
                                 Cet élément <a> vous servira pour 🌭-E !
