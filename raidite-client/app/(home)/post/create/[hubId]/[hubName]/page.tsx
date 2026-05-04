@@ -21,6 +21,8 @@ export default function CreatePost() {
     const text = useInputBinding("");
     const [error, setError] = useState("");
 
+    const myFileInput = useRef<HTMLInputElement>(null);
+
     async function tryPostPost() {
 
         setError("");
@@ -33,8 +35,9 @@ export default function CreatePost() {
 
         try {
             // Requête
-            const newPost: Post = await postAPI.postPost(params.hubId, title.value, text.value);
-
+        
+            const newPost: Post = await postAPI.postPost(params.hubId, title.value, text.value, myFileInput);
+           
             // Publication créée ? On la visite
             router.push("/post/" + newPost.id);
         }
@@ -64,9 +67,8 @@ export default function CreatePost() {
                 
                 <textarea {...text} rows={4} placeholder="Corps du texte" className="border-gray-300 border-1 p-2 rounded-xl w-full resize-none outline-none"></textarea>
                 
-                {/*
-                <input type="file" multiple accept="images/*" className="border-gray-300 text-gray-500 border-1 p-2 rounded-xl w-full mt-3 cursor-pointer" />
-                */}
+                
+                <input type="file" multiple ref={myFileInput} accept="images/*" className="border-gray-300 text-gray-500 border-1 p-2 rounded-xl w-full mt-3 cursor-pointer" />
                 
                 <div className="text-red-500 text-sm mt-2">{error}</div>
                 <div className="flex justify-end mt-3">
