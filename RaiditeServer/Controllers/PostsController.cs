@@ -1,11 +1,13 @@
 ﻿
+using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RaiditeServer.DTOs;
 using RaiditeServer.Models;
 using RaiditeServer.Services;
-using System.Security.Claims;
 
 namespace RaiditeServer.Controllers
 {
@@ -63,7 +65,26 @@ namespace RaiditeServer.Controllers
             bool voteToggleSuccess = await _commentService.UpvoteComment(mainComment.Id, user);
             if (!voteToggleSuccess) return StatusCode(StatusCodes.Status500InternalServerError);
 
-            return Ok(new PostDisplayDTO(post, true, user));
+            IFormCollection formCollection = await Request.ReadFormAsync();
+
+            foreach (IFormFile file in formCollection.Files)
+            {
+                await  _pictureService.CreatePicture(file, post);
+            }
+
+            return Ok(new PostDisplayDTO(post, false, user));
+        }
+
+        [HttpGet("{size}/{id}")]
+        public async Task<ActionResult> GetPicture(string size, int id)
+        {
+            Picture? pic = await _pictureService.GetPicture(id);
+            if (pic == null) return NotFound();
+
+            if (!Regex.Match(size, "full|thumbnail").Success) return BadRequest(new { Message = "La taille demandée n'existe pas." });
+
+            byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/" + size + "/" + pic.FileName);
+            return File(bytes, pic.MimeType);
         }
 
         /// <summary>
