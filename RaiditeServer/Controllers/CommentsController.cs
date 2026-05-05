@@ -1,12 +1,13 @@
 ﻿
+using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RaiditeServer.DTOs;
 using RaiditeServer.Models;
 using RaiditeServer.Services;
-using System.Security.Claims;
-using System.Text.RegularExpressions;
 
 namespace RaiditeServer.Controllers
 {
@@ -25,6 +26,18 @@ namespace RaiditeServer.Controllers
             _postService = postService;
             _commentService = commentService;
             _pictureService = pictureService;
+        }
+
+        [HttpGet("{size}/{id}")]
+        public async Task<ActionResult> GetPicture(string size, int id)
+        {
+            Picture? pic = await _pictureService.GetPicture(id);
+            if (pic == null) return NotFound();
+
+            if (!Regex.Match(size, "full|thumbnail").Success) return BadRequest(new { Message = "La taille demandée n'existe pas." });
+
+            byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/" + size + "/" + pic.FileName);
+            return File(bytes, pic.MimeType);
         }
 
         // Créer un nouveau commentaire. (Ne permet pas de créer le commentaire principal d'un post, pour cela,

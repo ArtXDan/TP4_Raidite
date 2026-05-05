@@ -22,6 +22,8 @@ namespace RaiditeServer.DTOs
         public bool IsAuthor {  get; set; }
         public List<CommentDisplayDTO>? SubComments { get; set; }
 
+        public List<int> PictureIds { get; set; }
+
         public CommentDisplayDTO(Comment comment, bool withSubComments, User? user)
         {
             List<CommentDisplayDTO>? subComments = new List<CommentDisplayDTO>();
@@ -38,6 +40,7 @@ namespace RaiditeServer.DTOs
             SubCommentTotal = comment.GetSubCommentTotal();
             SubComments = subComments;
             IsAuthor = user != null && user.UserName! == comment.User!.UserName!;
+            PictureIds = comment.Pictures?.Select(p => p.Id).ToList();
         }
     }
 }

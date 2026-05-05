@@ -42,8 +42,9 @@ namespace RaiditeServer.Services
                     new ResizeOptions() { Mode = ResizeMode.Min, Size = new Size() { Height = 200 } }));
                 image.Save(Directory.GetCurrentDirectory() + "/images/thumbnail/" + pic.FileName);
 
-                _context.Picture.Add(pic);
-                await _context.SaveChangesAsync();
+                //_context.Picture.Add(pic);
+                //await _context.SaveChangesAsync();
+            
             return pic;
         }
     }

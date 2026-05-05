@@ -206,11 +206,12 @@ export default function FullPost() {
                         <button className="bg-orange-600 hover:bg-orange-700 text-white rounded-full text-sm p-2 cursor-pointer mb-2" onClick={edit}>Modifier</button>
                     }
                     <div className="overflow-x-auto overflow-y-clip w-full whitespace-nowrap mt-1">
-                        {/*
-                            post.mainComment.IDS_DES_IMAGES.map(█ =>
-                                <img src="" alt="Image" className="h-[100px] inline mr-1" />
+                        {/* Ajouté affichage des images */}
+                        {
+                            post.mainComment.pictureIds.map(id =>
+                                <img key={id} alt="Picture" src={`https://localhost:7127/api/Posts/GetPicture/thumbnail/` + id} className="h-[100px] inline mr-1" />
                             )
-                        */}
+                        }
 
                         {/*
                             Cet élément <a> vous servira pour 🌭-E !
