@@ -56,7 +56,15 @@ namespace RaiditeServer.Controllers
             Hub? hub = await _hubService.GetHub(hubId);
             if (hub == null) return NotFound();
 
-            Comment? mainComment = await _commentService.CreateComment(user, text, null);
+            IFormCollection formCollection = await Request.ReadFormAsync();
+            List<Picture> pictures = new List<Picture>();
+            foreach (IFormFile file in formCollection.Files)
+            {
+                Picture? pic = await _pictureService.CreatePicture(file);
+                if (pic != null) { pictures.Add(pic); }
+
+            }
+            Comment? mainComment = await _commentService.CreateComment(user, text, null, pictures);
             if (mainComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             Post? post = await _postService.CreatePost(title, hub, mainComment);
@@ -65,12 +73,7 @@ namespace RaiditeServer.Controllers
             bool voteToggleSuccess = await _commentService.UpvoteComment(mainComment.Id, user);
             if (!voteToggleSuccess) return StatusCode(StatusCodes.Status500InternalServerError);
 
-            IFormCollection formCollection = await Request.ReadFormAsync();
-
-            foreach (IFormFile file in formCollection.Files)
-            {
-                await  _pictureService.CreatePicture(file, post);
-            }
+            
 
             return Ok(new PostDisplayDTO(post, false, user));
         }

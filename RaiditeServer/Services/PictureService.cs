@@ -25,7 +25,7 @@ namespace RaiditeServer.Services
 
             return await _context.Picture.FindAsync(id);
         }
-        public async Task<Picture?> CreatePicture(IFormFile file, Post post) 
+        public async Task<Picture?> CreatePicture(IFormFile file) 
         {
                 Image image = Image.Load(file.OpenReadStream());
 
@@ -33,8 +33,7 @@ namespace RaiditeServer.Services
                 {
                     Id = 0,
                     FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName),
-                    MimeType = file.ContentType,
-                    Post = post
+                    MimeType = file.ContentType
                 };
 
                 image.Save(Directory.GetCurrentDirectory() + "/images/full/" + pic.FileName);

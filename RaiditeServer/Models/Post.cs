@@ -12,6 +12,5 @@ namespace RaiditeServer.Models
         [ForeignKey(nameof(Comment))]
         public virtual Comment? MainComment { get; set; } // Commentaire principal de l'auteur qui a créé le post
 
-        public virtual List<Picture>? Pictures { get; set; } = new List<Picture>(); 
     }
 }
