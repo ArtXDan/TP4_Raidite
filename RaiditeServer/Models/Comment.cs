@@ -48,6 +48,5 @@ namespace RaiditeServer.Models
             return total;
         }
 
-        public virtual List<Picture>? Pictures { get; set; } = new List<Picture>();
     }
 }

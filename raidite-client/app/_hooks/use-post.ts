@@ -36,27 +36,29 @@ export function usePost() {
 
         const text : string | null = postText;
 
-        const files = file.current?.files;
+        
 
         formData.append("hubId", hub)
         formData.append("postTitle", title)
         formData.append("postText", text)
 
-        if(file.current == null){
-        console.log("Référence vide ou élément HTML non visible dans la page.");
-        return;
+        //On vérifie si le file input est null
+        if(file.current == null || file.current.files == null){
+        const formData = new FormData();
+
+        const x = await raidite.post(apiDomain + "api/Posts/PostPost/" + hubId, formData);
+        console.log(x.data);
+
+        return x.data;
     }
 
-        if(files == null){
-        console.log("L'input ne contient aucun fichier");
-        return;
-    }
+        
 
         let i = 1;
-        for(let f of files){
+        for(let f of file.current.files){
          formData.append("image" + i, f); 
          i++;
-}
+        }
 
         const x = await raidite.post(apiDomain + "api/Posts/PostPost/" + hubId, formData);
         console.log(x.data);

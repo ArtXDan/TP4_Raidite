@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RaiditeServer.Data;
 using RaiditeServer.DTOs;
 using RaiditeServer.Models;
 using RaiditeServer.Services;
@@ -20,15 +21,17 @@ namespace RaiditeServer.Controllers
         private readonly PostService _postService;
         private readonly CommentService _commentService;
         private readonly PictureService _pictureService;
+        private readonly RaiditeServerContext _context;
 
         public PostsController(UserManager<User> userManager, HubService hubService, 
-            PostService postService, CommentService commentService, PictureService pictureService)
+            PostService postService, CommentService commentService, PictureService pictureService, RaiditeServerContext context)
         {
             _userManager = userManager;
             _hubService = hubService;
             _postService = postService;
             _commentService = commentService;
             _pictureService = pictureService;
+            _context = context;
         }
 
         // Créer un nouveau Post. Cela crée en fait un nouveau commentaire (le commentaire principal du post)
@@ -56,16 +59,20 @@ namespace RaiditeServer.Controllers
             Hub? hub = await _hubService.GetHub(hubId);
             if (hub == null) return NotFound();
 
+            
+            Comment? mainComment = await _commentService.CreateComment(user, text, null, null);
+            if (mainComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
+
+
             IFormCollection formCollection = await Request.ReadFormAsync();
             List<Picture> pictures = new List<Picture>();
             foreach (IFormFile file in formCollection.Files)
             {
-                Picture? pic = await _pictureService.CreatePicture(file);
+                Picture? pic = await _pictureService.CreatePicture(file, mainComment);
+                await _context.SaveChangesAsync();
                 if (pic != null) { pictures.Add(pic); }
 
             }
-            Comment? mainComment = await _commentService.CreateComment(user, text, null, pictures);
-            if (mainComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             Post? post = await _postService.CreatePost(title, hub, mainComment);
             if (post == null) return StatusCode(StatusCodes.Status500InternalServerError);
@@ -73,6 +80,7 @@ namespace RaiditeServer.Controllers
             bool voteToggleSuccess = await _commentService.UpvoteComment(mainComment.Id, user);
             if (!voteToggleSuccess) return StatusCode(StatusCodes.Status500InternalServerError);
 
+            
             
 
             return Ok(new PostDisplayDTO(post, false, user));

@@ -208,7 +208,7 @@ export default function FullPost() {
                     <div className="overflow-x-auto overflow-y-clip w-full whitespace-nowrap mt-1">
                         {/* Ajouté affichage des images */}
                         {
-                            post.mainComment.pictureIds.map(id =>
+                            post.mainComment.listeIdsImages?.map(id =>
                                 <img key={id} alt="Picture" src={`https://localhost:7127/api/Posts/GetPicture/thumbnail/` + id} className="h-[100px] inline mr-1" />
                             )
                         }

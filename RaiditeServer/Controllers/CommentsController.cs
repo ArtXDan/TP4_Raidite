@@ -51,6 +51,14 @@ namespace RaiditeServer.Controllers
         [Authorize]
         public async Task<ActionResult<CommentDisplayDTO>> PostComment(int parentCommentId)
         {
+            //Récupérer le formData
+                IFormCollection formCollection = await Request.ReadFormAsync();
+            //Récupérer le texte du commentaire
+            string? texte = Request.Form["commentText"];
+
+            
+           
+
 
             User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             if (user == null) return Unauthorized();
@@ -58,13 +66,39 @@ namespace RaiditeServer.Controllers
             Comment? parentComment = await _commentService.GetComment(parentCommentId);
             if (parentComment == null || parentComment.User == null) return BadRequest();
 
-            Comment? newComment = await _commentService.CreateComment(user, commentDTO.Text, parentComment);
+            Comment? newComment = await _commentService.CreateComment(user, texte, parentComment, null);
             if (newComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
+
+
+            List<Picture> pictures = new List<Picture>();
+            try
+            {
+
+                foreach (IFormFile file in formCollection.Files)
+                {
+                    Picture? pic = await _pictureService.CreatePicture(file, newComment);
+                    await _context.SaveChangesAsync();
+                    if (pic != null) { pictures.Add(pic); }
+
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
             bool voteToggleSuccess = await _commentService.UpvoteComment(newComment.Id, user);
             if (!voteToggleSuccess) return StatusCode(StatusCodes.Status500InternalServerError);
 
-            return Ok(new CommentDisplayDTO(newComment, false, user));
+            List<int> listeIds = new List<int>();
+            foreach (var i in pictures)
+            {
+                listeIds.Add(i.Id);
+            }
+            CommentDisplayDTO commentDisplayDTO = new CommentDisplayDTO(newComment, false, user);
+            commentDisplayDTO.ListeIdsImages = listeIds;
+
+            return Ok(commentDisplayDTO);
         }
 
         // Modifier le texte d'un commentaire
@@ -115,19 +149,7 @@ namespace RaiditeServer.Controllers
         }
 
 
-        [HttpGet("{size}/{id}")]
-        public async Task<ActionResult> GetPicture(string size, int id)
-        {
-            Picture? image = await _context.Picture.FindAsync(id);
-            if (image == null) return NotFound();
-
-            // On vérifie si la taille est grande ou petite, sinon on envoie une erreure
-            if (!Regex.Match(size, "petite|grande").Success) return BadRequest(new { Message = "La taille demandée n'existe pas." });
-
-            // On récupère l'image
-            byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/" + size + "/" + image.FileName);
-            return File(bytes, image.MimeType);
-        }
+        
 
 
 

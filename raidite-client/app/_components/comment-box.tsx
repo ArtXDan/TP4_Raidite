@@ -175,7 +175,7 @@ export default function CommentBox(props: { comment: Comment, isSubComment: bool
                             {
                                 /*⛔ À compléter pour l'affichage des images*/
 
-                                comment.listeIdsImages.map((i) => <img src={'https://localhost:7127/api/Comments/GetPicture/petite/'+ i} key={i} alt="Image" className="h-[100px] inline mr-1" />
+                                comment.listeIdsImages?.map((i) => <img src={'https://localhost:7127/api/Comments/GetPicture/thumbnail/'+ i} key={i} alt="Image" className="h-[100px] inline mr-1" />
                                 )
                             }
 
