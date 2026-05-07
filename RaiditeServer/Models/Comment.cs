@@ -31,7 +31,7 @@ namespace RaiditeServer.Models
         public virtual List<User>? Downvoters { get; set; } = new List<User>();
 
 
-        public virtual List<Picture> Pictures { get; set; } = new List<Picture>();
+        public virtual List<Picture>? Pictures { get; set; } = new List<Picture>();
 
         public virtual List<int> ListeIdsImages { get; set; } = new List<int> { };
 

@@ -25,16 +25,18 @@ export function useComment(){
     async function postComment(parentCommentId : number, commentText : string, monFileInput : RefObject<HTMLInputElement | null>){
 
         //Vérification de la référence vers le input
-        if(monFileInput.current == null){
-            console.log("Référence vide ou élément HTML non visible dans la page.");
-            return;
+        if(monFileInput.current == null || monFileInput.current.files == null){
+            const formdata = new FormData();
+            //Ajout du texte au formdata
+            formdata.append("commentText",commentText);
+            
+            const x = await raidite.post(apiDomain + "api/Comments/PostComment/" + parentCommentId, formdata);
+            console.log(x.data);
+
+            return x.data;
         }
 
-        //Véréfication pour savoir si l'input contient des fichiers
-        if(monFileInput.current.files == null){
-            console.log("L'input ne contient aucun fichier");
-            return;
-        }
+        
 
         //On ajoute les images dans le formdata
         const formdata = new FormData();
