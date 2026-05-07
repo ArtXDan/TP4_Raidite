@@ -11,5 +11,6 @@ namespace RaiditeServer.Models
         [InverseProperty("MainCommentOf")]
         [ForeignKey(nameof(Comment))]
         public virtual Comment? MainComment { get; set; } // Commentaire principal de l'auteur qui a créé le post
+
     }
 }

@@ -1,11 +1,13 @@
 ﻿
+using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RaiditeServer.DTOs;
 using RaiditeServer.Models;
 using RaiditeServer.Services;
-using System.Security.Claims;
 
 namespace RaiditeServer.Controllers
 {
@@ -33,24 +35,59 @@ namespace RaiditeServer.Controllers
         // et le post lui-même.
         [HttpPost("{hubId}")]
         [Authorize]
-        public async Task<ActionResult<PostDisplayDTO>> PostPost(int hubId, PostDTO postDTO)
+        public async Task<ActionResult<PostDisplayDTO>> PostPost()
         {
+            string id = Request.Form["hubId"];
+            string title = Request.Form["postTitle"];
+            string text = Request.Form["postText"];
+
+            if (title == null)
+                return BadRequest(new { Message = "Il manque de title dans post!" });
+            else if (title.Length > 200)
+            {
+                return BadRequest(new { Message = "Te title est trop long!" });
+            }
+
             User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             if (user == null) return Unauthorized();
+
+            int hubId = int.Parse(id);
 
             Hub? hub = await _hubService.GetHub(hubId);
             if (hub == null) return NotFound();
 
-            Comment? mainComment = await _commentService.CreateComment(user, postDTO.Text, null, null);
+            IFormCollection formCollection = await Request.ReadFormAsync();
+            List<Picture> pictures = new List<Picture>();
+            foreach (IFormFile file in formCollection.Files)
+            {
+                Picture? pic = await _pictureService.CreatePicture(file);
+                if (pic != null) { pictures.Add(pic); }
+
+            }
+            Comment? mainComment = await _commentService.CreateComment(user, text, null, pictures);
             if (mainComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
-            Post? post = await _postService.CreatePost(postDTO.Title, hub, mainComment);
+            Post? post = await _postService.CreatePost(title, hub, mainComment);
             if (post == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             bool voteToggleSuccess = await _commentService.UpvoteComment(mainComment.Id, user);
             if (!voteToggleSuccess) return StatusCode(StatusCodes.Status500InternalServerError);
 
-            return Ok(new PostDisplayDTO(post, true, user));
+            
+
+            return Ok(new PostDisplayDTO(post, false, user));
+        }
+
+        [HttpGet("{size}/{id}")]
+        public async Task<ActionResult> GetPicture(string size, int id)
+        {
+            Picture? pic = await _pictureService.GetPicture(id);
+            if (pic == null) return NotFound();
+
+            if (!Regex.Match(size, "full|thumbnail").Success) return BadRequest(new { Message = "La taille demandée n'existe pas." });
+
+            byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/" + size + "/" + pic.FileName);
+            return File(bytes, pic.MimeType);
         }
 
         /// <summary>

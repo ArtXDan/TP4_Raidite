@@ -11,6 +11,6 @@ export class Comment{
         public subCommentTotal : number,
         public isAuthor : boolean,
         public subComments : Comment[],
-        public listeIdsImages? : number[],
+        public pictureIds : number[]
     ){}
 }

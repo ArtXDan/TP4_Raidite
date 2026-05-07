@@ -33,6 +33,18 @@ namespace RaiditeServer.Controllers
             _context = context;
         }
 
+        [HttpGet("{size}/{id}")]
+        public async Task<ActionResult> GetPicture(string size, int id)
+        {
+            Picture? pic = await _pictureService.GetPicture(id);
+            if (pic == null) return NotFound();
+
+            if (!Regex.Match(size, "full|thumbnail").Success) return BadRequest(new { Message = "La taille demandée n'existe pas." });
+
+            byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/" + size + "/" + pic.FileName);
+            return File(bytes, pic.MimeType);
+        }
+
         // Créer un nouveau commentaire. (Ne permet pas de créer le commentaire principal d'un post, pour cela,
         // voir l'action PostPost dans PostsController)
         [HttpPost("{parentCommentId}")]
@@ -46,49 +58,7 @@ namespace RaiditeServer.Controllers
             Comment? parentComment = await _commentService.GetComment(parentCommentId);
             if (parentComment == null || parentComment.User == null) return BadRequest();
 
-            List<Picture> listeImage = new List<Picture>();
-            try
-            {
-                //Réception du formData
-                IFormCollection formCollection = await Request.ReadFormAsync();
-                foreach (IFormFile f in formCollection.Files)
-                {
-                    Image image = Image.Load(f.OpenReadStream());
-
-                    if (f == null) return BadRequest(new { Message = "Fournis une image, niochon" });
-
-                    Picture picture = new Picture
-                    {
-                        Id = 0,
-                        FileName = Guid.NewGuid().ToString() + Path.GetExtension(f.FileName),
-                        MimeType = f.ContentType
-                    };
-
-                    // Sauvegarde de l'image dans le dossier images/grande
-                    image.Save(Directory.GetCurrentDirectory() + "/images/grande/" + picture.FileName);
-
-                    // Sauvegarde d'une version petite de l'image dans le dossier images/petite
-                    image.Mutate(i => i.Resize(
-                        new ResizeOptions() { Mode = ResizeMode.Min, Size = new Size() { Height = 200 } }));
-                    image.Save(Directory.GetCurrentDirectory() + "/images/petite/" + picture.FileName);
-
-                    _context.Picture.Add(picture);
-                    await _context.SaveChangesAsync();
-
-                   listeImage.Add(picture);
-
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            
-
-            string? texteCommentaire = Request.Form["commentText"];
-
-            Comment? newComment = await _commentService.CreateComment(user, texteCommentaire, parentComment,listeImage);
+            Comment? newComment = await _commentService.CreateComment(user, commentDTO.Text, parentComment);
             if (newComment == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             bool voteToggleSuccess = await _commentService.UpvoteComment(newComment.Id, user);
