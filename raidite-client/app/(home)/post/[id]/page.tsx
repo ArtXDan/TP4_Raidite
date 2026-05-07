@@ -105,7 +105,7 @@ export default function FullPost() {
         else {
             setPost({
                 ...post!, title: "Publication supprimée", mainComment:
-                    new Comment(post!.mainComment!.id, "", new Date(), null, 0, 0, false, false, post!.mainComment!.subCommentTotal, post!.mainComment!.isAuthor, post!.mainComment!.subComments)
+                    new Comment(post!.mainComment!.id, "", new Date(), null, 0, 0, false, false, post!.mainComment!.subCommentTotal, post!.mainComment!.isAuthor, post!.mainComment!.subComments, [])
             });
         }
 
