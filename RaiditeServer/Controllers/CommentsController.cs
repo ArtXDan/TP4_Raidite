@@ -56,10 +56,6 @@ namespace RaiditeServer.Controllers
             //Récupérer le texte du commentaire
             string? texte = Request.Form["commentText"];
 
-            
-           
-
-
             User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             if (user == null) return Unauthorized();
 
