@@ -175,7 +175,11 @@ export default function CommentBox(props: { comment: Comment, isSubComment: bool
                             {
                                 /*⛔ À compléter pour l'affichage des images*/
 
-                                comment.listeIdsImages?.map((i) => <img src={'https://localhost:7127/api/Comments/GetPicture/thumbnail/'+ i} key={i} alt="Image" className="h-[100px] inline mr-1" />
+                                comment.listeIdsImages?.map((i) => 
+                                <a key={i} target="_blank" href={apiDomain + `api/Posts/GetPicture/full/` + i} className="relative inline-block">
+                                    <img src={apiDomain +'api/Comments/GetPicture/thumbnail/'+ i}  alt="Image" className="h-[100px] inline mr-1" />
+                                </a>
+                                
                                 )
                             }
 
