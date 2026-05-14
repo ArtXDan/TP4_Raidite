@@ -58,13 +58,16 @@ namespace RaiditeServer.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult> GetPicture(int id)
         {
-            Picture? pic = await _pictureService.GetPicture(id);
-            if (pic == null) return NotFound();
+            Hub hub = await _hubService.GetHub(id);
 
-            if (!Regex.Match(size, "full|thumbnail").Success) return BadRequest(new { Message = "La taille demandée n'existe pas." });
+            if (hub.FileName == null && hub.MimeType == null)
+            {
+                byte[] bytes2 = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/hubLogo.png");
+                return File(bytes2, "image/png");
+            }
 
-            byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/" + size + "/" + pic.FileName);
-            return File(bytes, pic.MimeType);
+            byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/hub/" + hub.FileName);
+            return File(bytes, hub.MimeType);
         }
 
         // Créer un nouveau hub

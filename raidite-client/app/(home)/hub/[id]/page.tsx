@@ -99,7 +99,7 @@ export default function FullHub() {
                 hub &&
                 <div className="w-2xl py-4">
                     <div className="flex items-center gap-2">
-                        <div> <img src={`/images/hub/` + hub.fileName} alt={hub.name} className="rounded-full h-[64px] w-[64px] object-cover" /> </div> {/*Image Hub--------*/}
+                        <div> <img src={`https://localhost:7127/api/Hubs/GetPicture/` + hub.id} alt={hub.name} className="rounded-full h-[64px] w-[64px] object-cover" /> </div> {/*Image Hub--------*/}
                         <div className="text-2xl font-bold">r/{hub.name}</div>
                         <div className="flex-1"></div>
                         <button className="border-gray-500 border-1 p-1 pl-2 pr-3 rounded-full bg-white cursor-pointer hover:border-gray-800">

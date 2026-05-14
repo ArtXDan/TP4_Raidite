@@ -15,12 +15,6 @@ namespace RaiditeServer.Services
         {
             _context = context;
         }
-        public async Task<Picture?> GetPicture(int id)
-        {
-            if (IsContextNull()) return null;
-
-            return await _context.Picture.FindAsync(id);
-        }
 
         // Obtenir la liste des hubs rejoints par un utilisateur
         public IEnumerable<Hub>? GetUserHubs(User user)
@@ -69,8 +63,9 @@ namespace RaiditeServer.Services
         public async Task<Hub?> CreateHub(User user, string hubTitle, IFormFile file)
         {
             if (IsContextNull()) return null;
-
-            Image image = Image.Load(file.OpenReadStream());
+          
+                Image image = Image.Load(file.OpenReadStream());
+            
 
             Hub hub = new Hub {
                 Id = 0, 

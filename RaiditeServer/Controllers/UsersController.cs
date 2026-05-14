@@ -67,8 +67,6 @@ namespace RaiditeServer.Controllers
         [HttpGet("{size}/{username}")]
         public async Task<ActionResult> GetPicture(string size, string username)
         {
-
-
             User? user = await _userManager.FindByNameAsync(username);
 
             if (user.FileName == null) 
@@ -77,7 +75,6 @@ namespace RaiditeServer.Controllers
                 return File(bytes2, "image/png");
             }
             
-
             // Si la size fournit ne correspond pas à "big" OU "smol", erreur.
             if (!Regex.Match(size, "full|thumbnail").Success) return BadRequest(new { Message = "La taille demandée n'existe pas." });
 
