@@ -50,7 +50,12 @@ export function useAccount(){
 
     async function changePassword(oldPass : string, newPass : string, conNewPass : string){
 
-
+        const x = await raidite.post(apiDomain + "api/Users/ChangePassword", {
+        oldPassword: oldPass,
+        newPassword: newPass,
+        confirmNewPassword: conNewPass
+    });
+    return x.data;
 
     }
 

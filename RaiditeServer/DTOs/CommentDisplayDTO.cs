@@ -39,7 +39,7 @@ namespace RaiditeServer.DTOs
             Downvoted = user != null && (comment.Downvoters?.Contains(user) ?? false);
             SubCommentTotal = comment.GetSubCommentTotal();
             SubComments = subComments;
-            IsAuthor = user != null && user.UserName! == comment.User!.UserName!;
+            IsAuthor = user != null && comment.User != null && user.UserName! == comment.User!.UserName!;
             ListeIdsImages = comment.Pictures?.Select(p => p.Id).ToList();
         }
     }

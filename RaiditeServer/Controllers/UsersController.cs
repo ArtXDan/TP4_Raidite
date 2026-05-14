@@ -142,5 +142,23 @@ namespace RaiditeServer.Controllers
                     new { Message = "Le nom d'utilisateur ou le mot de passe est invalide." });
             }
         }
+        [HttpPost]
+        [Authorize]
+        public async Task<ActionResult> ChangePassword(ChangerMotDePasseDTO changerMDP)
+        {
+            User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            if (user == null) return Unauthorized();
+
+            if (changerMDP.NewPassword != changerMDP.ConfirmNewPassword)
+            return BadRequest(new { Message = "Les deux nouveaux mots de passe ne correspondent pas." });
+
+            IdentityResult result = await _userManager.ChangePasswordAsync(user, changerMDP.OldPassword, changerMDP.NewPassword);
+
+            if (!result.Succeeded)
+            return BadRequest(new { Message = "L'ancien mot de passe est incorrect." });
+
+            return Ok(new { Message = "Mot de passe modifié avec succès." });
+        }
     }
 }

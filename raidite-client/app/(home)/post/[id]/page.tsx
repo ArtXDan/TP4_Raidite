@@ -94,8 +94,7 @@ export default function FullPost() {
     async function deletePost() {
 
         // Appeler la requête à partir d'ici
-
-
+        await commentAPI.deleteComment(post!.mainComment!.id);
         // Il n'y avait aucun commentaire ? On quitte la page car le post va se faire supprimer.
         if (post!.mainComment!.subCommentTotal == 0) {
             router.push("/hub/" + post?.hubId);
