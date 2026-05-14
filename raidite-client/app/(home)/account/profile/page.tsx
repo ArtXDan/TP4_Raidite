@@ -8,14 +8,22 @@ import useInputBinding from "@/app/_hooks/use-input-binding";
 import { Comment } from "@/app/_types/comment";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useContext, useEffect, useRef, useState } from "react";
+import { RefObject, useContext, useEffect, useRef, useState } from "react";
 import { AccountContext } from "../../layout";
 import { apiDomain } from "@/next.config";
 import { Post } from "@/app/_types/post";
 import PostThumbnail from "@/app/_components/post-thumbnail";
 import { usePost } from "@/app/_hooks/use-post";
 
+
+
+
 export default function Profile() {
+
+    
+
+    //FileInput
+    const FileInputAvatar = useRef<HTMLInputElement>(null);
 
     // Hooks
     const accountAPI = useAccount();
@@ -37,11 +45,44 @@ export default function Profile() {
 
     const moderatorName = useInputBinding("");
 
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+    function previewImage(e : any){
+
+    // S'il y a bel et bien une image dans l'input
+    if(e.target.files && e.target.files[0]){
+
+        // Si nous étions déjà en train de prévisualiser l'image, supprimer l'ancienne version
+        // pour ne pas avoir de fuite de mémoire.
+        if (imagePreview) {
+            URL.revokeObjectURL(imagePreview);
+        }
+
+        // Afficher le fichier dans l'élément <img> de la page dont src={imageBlob}
+        setImagePreview(URL.createObjectURL(e.target.files[0]));
+    }
+    else
+    {
+        return (<img src="/images/avatarPlaceholder.png" alt="Avatar prévisualisé" className="rounded-lg mb-2 m-auto h-[200px]" />)
+    }
+    
+
+}
+
     async function changeAvatar() {
 
         setFeedback("");
         
         // Glisser le code pour préparer l'avatar et appeler la requête ici !
+        const formData = new FormData();
+        let i = 1;
+        if(FileInputAvatar.current != null && FileInputAvatar.current.files != null )
+            {
+                
+                formData.append("image", FileInputAvatar.current.files[0]); 
+                
+            }
+            accountAPI.changeAvatar(formData);
 
         setFeedback("Avatar modifié ! Réactualisez la page pour voir le nouvel avatar.");
 
@@ -77,7 +118,7 @@ export default function Profile() {
 
                     {/* Avatar et nom d'utilisateur */}
                     <Avatar size="lg">
-                        <AvatarImage src="/images/avatar.png" alt="Placeholder" />
+                        <AvatarImage src={apiDomain + 'api/Users/GetPicture/thumbnail/' + username} alt="Placeholder" />
                     </Avatar>
                     <div>
                         <div className="text-xl font-bold">{username}</div>
@@ -99,9 +140,12 @@ export default function Profile() {
                     {/* Avatar */}
                     <TabsContent value="avatar" className="pt-2">
 
-                        <img src="/images/avatarPlaceholder.png" alt="Avatar prévisualisé" className="rounded-lg mb-2 m-auto h-[200px]" />
+                        
+                        {
+                            imagePreview != null && <img src={imagePreview} alt="" />
+                        }
                         <div className="p-2 px-3 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-full flex items-center">
-                            <input type="file" accept="image/*"/>
+                            <input type="file" ref={FileInputAvatar} accept="image/*" onChange={previewImage}/>
                         </div>
                         <div className="flex mt-2">
                             <OrangeButton fct={changeAvatar}>Modifier</OrangeButton>
