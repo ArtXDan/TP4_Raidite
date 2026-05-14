@@ -198,10 +198,10 @@ export default function FullPost() {
                                     {/* Menu déroulant pour modifier, supprimer, signaler et sauvegarder la publication */}
                                     <DropdownMenuGroup className="[&>*]:cursor-pointer">
                                         {post.mainComment.isAuthor && <DropdownMenuItem onClick={() => setToggleEdit(!toggleEdit)}><SquarePen />Modifier</DropdownMenuItem>}
-                                        <DropdownMenuItem onClick={deletePost}><Trash2 />Supprimer</DropdownMenuItem>
+                                        {post.mainComment.isAuthor && (<DropdownMenuItem onClick={deletePost}><Trash2 />Supprimer</DropdownMenuItem>)}
                                         <DropdownMenuItem onClick={report}><Flag />Signaler</DropdownMenuItem>
 
-                                        {post.isSaved ? (<DropdownMenuItem onClick={save}><SaveOff /> Retirer</DropdownMenuItem>)
+                                        {post.isSaved ? (<DropdownMenuItem onClick={save}><SaveOff/> Retirer</DropdownMenuItem>)
                                         : (<DropdownMenuItem onClick={save}><Save /> Sauvegarder</DropdownMenuItem>)} 
 
                                     </DropdownMenuGroup>

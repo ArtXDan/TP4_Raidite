@@ -163,6 +163,28 @@ namespace RaiditeServer.Controllers
 
             if(user == null || comment.User != user) return Unauthorized();
 
+            if (comment.Pictures != null && comment.Pictures.Count > 0)
+            {
+                foreach (var pic in comment.Pictures)
+                {
+                    try
+                    {
+                        if (System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "images/full", pic.FileName)))
+                            System.IO.File.Delete(Path.Combine(Directory.GetCurrentDirectory(), "images/full", pic.FileName));
+
+                        if (System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "images/thumbnail", pic.FileName)))
+                            System.IO.File.Delete(Path.Combine(Directory.GetCurrentDirectory(), "images/thumbnail", pic.FileName));
+
+                        _context.Remove(pic);
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
             // Cette boucle permet non-seulement de supprimer le commentaire lui-même, mais s'il possède
             // un commentaire parent qui a été soft-delete et qui n'a pas de sous-commentaires,
             // le supprime aussi. (Et ainsi de suite)
