@@ -41,7 +41,10 @@ export function useAccount(){
 
     async function changeAvatar(formData : any){
 
+        const x = await raidite.post(apiDomain + "api/Users/ChangeAvatar/", formData);
+        console.log(x.data);
 
+        return x.data;
 
     }
 

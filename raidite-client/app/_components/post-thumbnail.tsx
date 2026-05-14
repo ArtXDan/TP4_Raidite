@@ -5,8 +5,13 @@ import { Post } from "../_types/post";
 import CommentStats from "./_mini-components/comment-stats";
 import { useRouter } from "next/navigation";
 import { apiDomain } from "@/next.config";
+import { AccountContext } from "../(home)/layout";
+import { useContext } from "react";
 
 export default function PostThumbnail(props: { post: Post, showUser: boolean }) {
+    
+    // Contexts
+        const { loggedIn, setLoggedIn, username, setUsername } = useContext(AccountContext);
 
     // Hooks
     const router = useRouter();
@@ -33,7 +38,7 @@ export default function PostThumbnail(props: { post: Post, showUser: boolean }) 
                             {/* Affichage de l'avatar de l'auteur OU de l'icône du forum, selon la situation */}
                             {props.showUser ?
                                 <Avatar size="sm">
-                                    <AvatarImage src="/images/avatar.png" alt="Placeholder" />
+                                    <AvatarImage src={apiDomain + 'api/Users/GetPicture/thumbnail/' + username} alt="Placeholder" />
                                 </Avatar> :
                                 <img src="/images/hubLogo.png" alt={post.hubName} className="h-[24px] w-[24px] object-cover rounded-full inline" />
                             }

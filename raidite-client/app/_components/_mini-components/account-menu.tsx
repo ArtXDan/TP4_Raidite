@@ -35,7 +35,7 @@ export default function AccountMenu() {
 
                         {/* Affichage de l'avatar si on est connecté */}
                         <Avatar className="overflow-visible">
-                            <AvatarImage src="/images/avatar.png" alt="Placeholder" className="rounded-full" />
+                            <AvatarImage src={apiDomain + 'api/Users/GetPicture/thumbnail/' + username} alt="Placeholder" className="rounded-full" />
                             <AvatarBadge className="bg-green-600" />
                         </Avatar>
                     </div>

@@ -136,7 +136,7 @@ export default function CommentBox(props: { comment: Comment, isSubComment: bool
                 {/* Avatar de l'utilisateur */}
                 {toggleVisibility &&
                     <Avatar>
-                        <AvatarImage src="/images/hubLogo.png" alt="Placeholder" />
+                        <AvatarImage src={apiDomain + 'api/Users/GetPicture/thumbnail/' + username} alt="Placeholder" />
                     </Avatar>
                 }
                 {toggleVisibility &&
