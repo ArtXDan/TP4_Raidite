@@ -75,7 +75,6 @@ namespace RaiditeServer.Controllers
                     Picture? pic = await _pictureService.CreatePicture(file, newComment);
                     await _context.SaveChangesAsync();
                     if (pic != null) { pictures.Add(pic); }
-
                 }
             }
             catch (Exception)

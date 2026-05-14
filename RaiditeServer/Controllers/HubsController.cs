@@ -1,4 +1,5 @@
 ﻿
+using System.Drawing;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
@@ -54,17 +55,36 @@ namespace RaiditeServer.Controllers
             return Ok(userHubs.Select(h => new HubDisplayDTO(h, user)));
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetPicture(int id)
+        {
+            Picture? pic = await _pictureService.GetPicture(id);
+            if (pic == null) return NotFound();
+
+            if (!Regex.Match(size, "full|thumbnail").Success) return BadRequest(new { Message = "La taille demandée n'existe pas." });
+
+            byte[] bytes = System.IO.File.ReadAllBytes(Directory.GetCurrentDirectory() + "/images/" + size + "/" + pic.FileName);
+            return File(bytes, pic.MimeType);
+        }
+
         // Créer un nouveau hub
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<HubDisplayDTO>> PostHub(HubDTO hubDTO)
+        public async Task<ActionResult<HubDisplayDTO>> PostHub()
         {
+            string hubTitle = Request.Form["hubTitle"];
+
+            if (hubTitle == null)
+                return BadRequest(new { Message = "Il manque des morceaux !" });
+
             User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
             if (user == null) return Unauthorized();
 
-            Hub hub = new Hub { Id = 0, Creator = user, Name = hubDTO.Title };
-            Hub? newHub = await _hubService.CreateHub(hub);
+            IFormCollection formCollection = await Request.ReadFormAsync();
+            IFormFile? file = formCollection.Files.GetFile("myImage");
+
+            Hub? newHub = await _hubService.CreateHub(user, hubTitle, file);
             if (newHub == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
             Hub? joinedHub = await _hubService.ToggleJoinHub(newHub.Id, user);

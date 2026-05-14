@@ -51,9 +51,6 @@ export function usePost() {
 
         return x.data;
     }
-
-        
-
         let i = 1;
         for(let f of file.current.files){
          formData.append("image" + i, f); 

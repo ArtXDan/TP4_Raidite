@@ -15,6 +15,12 @@ namespace RaiditeServer.Services
         {
             _context = context;
         }
+        public async Task<Picture?> GetPicture(int id)
+        {
+            if (IsContextNull()) return null;
+
+            return await _context.Picture.FindAsync(id);
+        }
 
         // Obtenir la liste des hubs rejoints par un utilisateur
         public IEnumerable<Hub>? GetUserHubs(User user)
@@ -60,12 +66,26 @@ namespace RaiditeServer.Services
         }
 
         // Créer un nouvel hub
-        public async Task<Hub?> CreateHub(Hub hub)
+        public async Task<Hub?> CreateHub(User user, string hubTitle, IFormFile file)
         {
             if (IsContextNull()) return null;
 
+            Image image = Image.Load(file.OpenReadStream());
+
+            Hub hub = new Hub {
+                Id = 0, 
+                Creator = user, 
+                Name = hubTitle,
+                FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName),
+                MimeType = file.ContentType
+            };
+
             bool alreadyExists = await _context.Hub.AnyAsync(h => h.Name.ToUpper() == hub.Name.ToUpper());
             if (alreadyExists) return null;
+
+            image.Mutate(i => i.Resize(
+                new ResizeOptions() { Mode = ResizeMode.Min, Size = new Size() { Height = 200 } }));
+            image.Save(Directory.GetCurrentDirectory() + "/images/hub/" + hub.FileName);
 
             _context.Hub.Add(hub);
             await _context.SaveChangesAsync();

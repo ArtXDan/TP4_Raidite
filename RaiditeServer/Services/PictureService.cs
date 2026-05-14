@@ -20,11 +20,6 @@ namespace RaiditeServer.Services
         private bool IsContextNull() => _context == null || _context.Picture == null;
 
 
-
-       
-
-
-
         public async Task<Picture?> GetPicture(int id)
         {
             if (IsContextNull()) return null;
