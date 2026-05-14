@@ -38,7 +38,7 @@ export default function PostThumbnail(props: { post: Post, showUser: boolean }) 
                             {/* Affichage de l'avatar de l'auteur OU de l'icône du forum, selon la situation */}
                             {props.showUser ?
                                 <Avatar size="sm">
-                                    <AvatarImage src={apiDomain + 'api/Users/GetPicture/thumbnail/' + username} alt="Placeholder" />
+                                    <AvatarImage src={apiDomain + 'api/Users/GetPicture/thumbnail/' + post.mainComment.username} alt="Placeholder" />
                                 </Avatar> :
                                 <img src="/images/hubLogo.png" alt={post.hubName} className="h-[24px] w-[24px] object-cover rounded-full inline" />
                             }
