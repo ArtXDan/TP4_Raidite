@@ -14,6 +14,7 @@ namespace RaiditeServer.DTOs
         public string HubName { get; set; } = null!;
         public CommentDisplayDTO MainComment { get; set; } = null!;
 
+        public bool IsSaved { get; set; }
 
         public PostDisplayDTO() { }
         public PostDisplayDTO(Post post, bool withSubComments, User? user)
@@ -23,6 +24,8 @@ namespace RaiditeServer.DTOs
             MainComment = new CommentDisplayDTO(post.MainComment!, withSubComments, user);
             HubName = post.Hub!.Name;
             HubId = post.Hub!.Id;
+
+            IsSaved = user != null && user.PostsFavoris.Any(p => p.Id == post.Id);
         }
     }
 }

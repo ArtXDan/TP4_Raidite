@@ -47,6 +47,22 @@ export default function Profile() {
 
     const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+    useEffect(() => {
+
+    async function loadFavoris() {
+        try {
+            const data = await postAPI.getSavedPosts();
+            setPosts(data);
+        }
+        catch (e) {
+            console.error(e);
+        }
+    }
+
+    loadFavoris();
+
+}, []);
+
     function previewImage(e : any){
 
     // S'il y a bel et bien une image dans l'input
