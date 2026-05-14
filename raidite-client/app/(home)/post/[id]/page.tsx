@@ -164,7 +164,7 @@ export default function FullPost() {
                     <div className="flex mb-1 items-center">
 
                         {/* Icône du forum, nom du forum et nom d'utilisateur de l'auteur */}
-                        <img src="/images/hubLogo.png" alt={post.hubName} className="h-[36px] w-[36px] object-cover rounded-full inline mr-2" />
+                        <img src={`https://localhost:7127/api/Hubs/GetPicture/` + post.hubId} alt={post.hubName} className="h-[36px] w-[36px] object-cover rounded-full inline mr-2" />
                         <div>
                             <div className="text-sm font-bold">
                                 r/{post.hubName} •

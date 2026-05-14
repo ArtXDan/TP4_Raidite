@@ -64,8 +64,26 @@ namespace RaiditeServer.Services
         {
             if (IsContextNull()) return null;
           
-                Image image = Image.Load(file.OpenReadStream());
-            
+            if (file == null) 
+            {
+
+                Hub hub2 = new Hub
+                {
+                    Id = 0,
+                    Creator = user,
+                    Name = hubTitle
+                };
+
+                bool alreadyExists2 = await _context.Hub.AnyAsync(h => h.Name.ToUpper() == hub2.Name.ToUpper());
+                if (alreadyExists2) return null;
+
+
+                _context.Hub.Add(hub2);
+                await _context.SaveChangesAsync();
+                return hub2;
+            }
+
+            Image image = Image.Load(file.OpenReadStream());
 
             Hub hub = new Hub {
                 Id = 0, 
