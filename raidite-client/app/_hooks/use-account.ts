@@ -26,6 +26,7 @@ export function useAccount(){
         console.log(x.data);
         sessionStorage.setItem("token", x.data.token);
         sessionStorage.setItem("username", x.data.username);
+        sessionStorage.setItem("roles", JSON.stringify(x.data.roles));
         return x.data;
 
     }

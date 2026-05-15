@@ -133,7 +133,8 @@ namespace RaiditeServer.Controllers
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),
                     validTo = token.ValidTo,
-                    username = user.UserName
+                    username = user.UserName,
+                    roles = roles
                 });
             }
             else
@@ -142,7 +143,7 @@ namespace RaiditeServer.Controllers
                     new { Message = "Le nom d'utilisateur ou le mot de passe est invalide." });
             }
         }
-        [HttpPost]
+        [HttpPut]
         [Authorize]
         public async Task<ActionResult> ChangePassword(ChangerMotDePasseDTO changerMDP)
         {
@@ -159,6 +160,18 @@ namespace RaiditeServer.Controllers
             return BadRequest(new { Message = "L'ancien mot de passe est incorrect." });
 
             return Ok(new { Message = "Mot de passe modifié avec succès." });
+        }
+
+        [HttpPut("{username}")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> MakeRedactor(string username)
+        {
+            User? newAdmin = await _userManager.FindByNameAsync(username);
+            if (newAdmin == null) return NotFound(new { Message = "Cet utilisateur n'existe pas" });
+
+            await _userManager.AddToRoleAsync(newAdmin, "admin");
+            return Ok(new { Message = username = " est maintenant admin!" });
+
         }
     }
 }
