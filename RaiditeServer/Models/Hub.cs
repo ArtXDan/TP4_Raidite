@@ -19,5 +19,7 @@ namespace RaiditeServer.Models
         [JsonIgnore]
         [InverseProperty("CreatedHubs")]
         public virtual User Creator { get; set; } = null!;
+        public string? FileName { get; set; }
+        public string? MimeType { get; set; }
     }
 }

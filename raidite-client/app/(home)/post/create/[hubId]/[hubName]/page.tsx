@@ -56,7 +56,7 @@ export default function CreatePost() {
                 {/* Nom et icône du forum */}
                 <Link href={'/hub/' + params.hubId}>
                     <div className="flex mt-2 mb-4 items-center">
-                        <img src="/images/hubLogo.png" alt="Hub" className="h-[28px] rounded-full inline mr-2" />
+                        <img src={`https://localhost:7127/api/Hubs/GetPicture/` + params.hubId} alt="Hub" className="h-[28px] rounded-full inline mr-2" />
                         <div>r/{params.hubName}</div>
                     </div>
                 </Link>

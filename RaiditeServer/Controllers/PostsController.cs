@@ -217,5 +217,50 @@ namespace RaiditeServer.Controllers
         {
             return hub.Posts!.OrderByDescending(p => p.MainComment?.Date).Take(qty);
         }
+
+        [HttpPost("{id}")]
+        [Authorize]
+        public async Task<ActionResult> SauvegarderPost(int id)
+        {
+            User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            if (user == null) return Unauthorized();
+
+            Post? post = await _context.Post.Include(p => p.PostsFavorisUsers).FirstOrDefaultAsync(p => p.Id == id);
+
+            if (post == null) return NotFound();
+
+            bool isSaved = post.PostsFavorisUsers.Any(p => p.Id == user.Id);
+
+            if (isSaved) 
+            {
+                post.PostsFavorisUsers.Remove(user);
+            }
+
+            else 
+            {
+                post.PostsFavorisUsers.Add(user);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new {isSaved = !isSaved});
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<PostDisplayDTO>>> GetSavedPosts()
+        {
+            User? user = await _context.Users.Include(p => p.PostsFavoris).ThenInclude(p => p.MainComment)
+                .FirstOrDefaultAsync(p => p.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            if (user == null)
+                return Unauthorized();
+
+            List<PostDisplayDTO> favs = user.PostsFavoris.OrderByDescending(p => p.MainComment!.Date)
+                .Select(p => new PostDisplayDTO(p, false, user)).ToList();
+
+            return Ok(favs);
+        }
     }
 }

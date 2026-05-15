@@ -60,12 +60,45 @@ namespace RaiditeServer.Services
         }
 
         // Créer un nouvel hub
-        public async Task<Hub?> CreateHub(Hub hub)
+        public async Task<Hub?> CreateHub(User user, string hubTitle, IFormFile file)
         {
             if (IsContextNull()) return null;
+          
+            if (file == null) 
+            {
+
+                Hub hub2 = new Hub
+                {
+                    Id = 0,
+                    Creator = user,
+                    Name = hubTitle
+                };
+
+                bool alreadyExists2 = await _context.Hub.AnyAsync(h => h.Name.ToUpper() == hub2.Name.ToUpper());
+                if (alreadyExists2) return null;
+
+
+                _context.Hub.Add(hub2);
+                await _context.SaveChangesAsync();
+                return hub2;
+            }
+
+            Image image = Image.Load(file.OpenReadStream());
+
+            Hub hub = new Hub {
+                Id = 0, 
+                Creator = user, 
+                Name = hubTitle,
+                FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName),
+                MimeType = file.ContentType
+            };
 
             bool alreadyExists = await _context.Hub.AnyAsync(h => h.Name.ToUpper() == hub.Name.ToUpper());
             if (alreadyExists) return null;
+
+            image.Mutate(i => i.Resize(
+                new ResizeOptions() { Mode = ResizeMode.Min, Size = new Size() { Height = 200 } }));
+            image.Save(Directory.GetCurrentDirectory() + "/images/hub/" + hub.FileName);
 
             _context.Hub.Add(hub);
             await _context.SaveChangesAsync();

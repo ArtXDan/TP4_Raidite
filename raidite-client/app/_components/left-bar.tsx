@@ -64,7 +64,7 @@ export default function LeftBar() {
                     {
                         myHubs.map((h: Hub) =>
                             <div key={h.id} className="p-1 px-2 mx-1 rounded-full hover:bg-gray-100 text-sm flex items-center" onClick={() => goToHub(h)}>
-                                <img src="/images/hubLogo.png" alt={h.name} className="h-[32px] w-[32px] object-cover rounded-full inline mr-2" />
+                                <img src={`https://localhost:7127/api/Hubs/GetPicture/` + h.id} alt={h.name} className="h-[32px] w-[32px] object-cover rounded-full inline mr-2" />
                                 r/{h.name}
                                 {loggedIn &&
                                     <div className="flex-1 flex justify-end pr-2"><Star onClick={(e) => join(e, h.id)} className="h-[20px]" fill={h.isJoined ? '#000' : 'none'} /></div>

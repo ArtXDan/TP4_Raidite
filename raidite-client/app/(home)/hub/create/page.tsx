@@ -19,6 +19,7 @@ export default function CreateHub() {
     // États
     const [error, setError] = useState("");
     const title = useInputBinding("");
+    const myFileInput = useRef<HTMLInputElement>(null);
 
     async function tryCreateHub() {
 
@@ -32,7 +33,7 @@ export default function CreateHub() {
 
         try {
             // Requête
-            const newHub = await hubAPI.postHub(title.value);
+            const newHub = await hubAPI.postHub(title.value, myFileInput);
 
             // Mise à jour du layout avec le nouveau hub
             hubContext.setMyHubs([newHub, ...hubContext.myHubs]);
@@ -59,10 +60,8 @@ export default function CreateHub() {
                     <div className={'text-sm pr-3 ' + (title.value.length <= 15 ? 'text-gray-600' : 'text-red-600')}>{title.value.length}/15</div>
                 </div>
                 
-                {/*
                     <img src="/images/avatarPlaceholder.png" alt="Icône choisie" className="rounded-lg mb-2 m-auto h-[200px]" />
-                    <input className="bg-gray-100 p-3 px-4 rounded-2xl mb-3 w-full text-gray-500" type="file" accept="images/*" />
-                */}
+                    <input className="bg-gray-100 p-3 px-4 rounded-2xl mb-3 w-full text-gray-500" type="file" ref={myFileInput} accept="images/*" />
                 
                 <div className="[&>*]:w-full">
                     <OrangeButton fct={tryCreateHub}>Créer le forum</OrangeButton>

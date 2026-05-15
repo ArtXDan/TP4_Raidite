@@ -1,5 +1,6 @@
 import { apiDomain } from "@/next.config";
 import { raidite } from "../raidite-interceptor";
+import { RefObject } from "react";
 
 export function useHub(){
 
@@ -14,17 +15,28 @@ export function useHub(){
     }
 
     // Créer un forum
-    async function postHub(hubTitle : string){
+    async function postHub(hubTitle : string, file : RefObject<HTMLInputElement | null>){
 
-        const hubDTO = {
-            title : hubTitle
-        };
+        const formData = new FormData();
 
-        const x =  await raidite.post(apiDomain + "api/Hubs/PostHub", hubDTO);
+        const hub : string  = hubTitle;
+
+        formData.append("hubTitle", hub)
+        
+        if(file.current == null || file.current.files == null)
+        {
+        const x =  await raidite.post(apiDomain + "api/Hubs/PostHub", formData);
         console.log(x.data);
 
         return x.data;
+        }
+        
+        formData.append("myImage", file.current.files[0]);
 
+        const x =  await raidite.post(apiDomain + "api/Hubs/PostHub", formData);
+        console.log(x.data);
+
+        return x.data;
     }
 
     // Obtenir les infos d'un forum

@@ -47,6 +47,22 @@ export default function Profile() {
 
     const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+    useEffect(() => {
+
+    async function loadFavoris() {
+        try {
+            const data = await postAPI.getSavedPosts();
+            setPosts(data);
+        }
+        catch (e) {
+            console.error(e);
+        }
+    }
+
+    loadFavoris();
+
+}, []);
+
     function previewImage(e : any){
 
     // S'il y a bel et bien une image dans l'input
@@ -92,9 +108,18 @@ export default function Profile() {
 
         setFeedback("");
         
-        // Glisser le code pour appeler la requête ici !
+        if (newPass.value !== conNewPass.value) {
+            setFeedback("Les deux nouveaux mots de passe ne correspondent pas.");
+            return;
+        }
 
-        setFeedback("Mot de passe modifié.");
+        try {
+        await accountAPI.changePassword(oldPass.value, newPass.value, conNewPass.value);
+            setFeedback("Mot de passe modifié.");
+        } 
+        catch (e) {
+            setFeedback("L'ancien mot de passe est incorrect.");
+        }
 
     }
 

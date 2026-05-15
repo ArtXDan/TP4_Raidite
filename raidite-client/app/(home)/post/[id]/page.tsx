@@ -94,8 +94,7 @@ export default function FullPost() {
     async function deletePost() {
 
         // Appeler la requête à partir d'ici
-
-
+        await commentAPI.deleteComment(post!.mainComment!.id);
         // Il n'y avait aucun commentaire ? On quitte la page car le post va se faire supprimer.
         if (post!.mainComment!.subCommentTotal == 0) {
             router.push("/hub/" + post?.hubId);
@@ -141,10 +140,23 @@ export default function FullPost() {
         setFeedback("");
 
         // Appeler la requête à partir d'Ici
+        if (!loggedIn)
+        {
+            router.push("/account/login")
+        }
 
+        try
+        {
+            const res = await postAPI.savePost(post!.id);
 
+            setPost({...post!, isSaved : res.isSaved})
+            setFeedback(!res.isSaved ? "Publication retirée des sauvegardes." : "Publication sauvegardée.");
+        }
+        catch {
+        setFeedback("Sauvegarde est trompé");
+        }
         // Trouver quelque chose pour remplacer le false avec une condition valide
-        setFeedback(false ? "Publication retirée des sauvegardes." : "Publication sauvegardée.");
+        
 
     }
 
@@ -164,7 +176,7 @@ export default function FullPost() {
                     <div className="flex mb-1 items-center">
 
                         {/* Icône du forum, nom du forum et nom d'utilisateur de l'auteur */}
-                        <img src="/images/hubLogo.png" alt={post.hubName} className="h-[36px] w-[36px] object-cover rounded-full inline mr-2" />
+                        <img src={`https://localhost:7127/api/Hubs/GetPicture/` + post.hubId} alt={post.hubName} className="h-[36px] w-[36px] object-cover rounded-full inline mr-2" />
                         <div>
                             <div className="text-sm font-bold">
                                 r/{post.hubName} •
@@ -185,10 +197,12 @@ export default function FullPost() {
                                     {/* Menu déroulant pour modifier, supprimer, signaler et sauvegarder la publication */}
                                     <DropdownMenuGroup className="[&>*]:cursor-pointer">
                                         {post.mainComment.isAuthor && <DropdownMenuItem onClick={() => setToggleEdit(!toggleEdit)}><SquarePen />Modifier</DropdownMenuItem>}
-                                        <DropdownMenuItem onClick={deletePost}><Trash2 />Supprimer</DropdownMenuItem>
+                                        {post.mainComment.isAuthor && (<DropdownMenuItem onClick={deletePost}><Trash2 />Supprimer</DropdownMenuItem>)}
                                         <DropdownMenuItem onClick={report}><Flag />Signaler</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={save}><Save /> Sauvegarder</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={save}><SaveOff /> Retirer</DropdownMenuItem>
+
+                                        {post.isSaved ? (<DropdownMenuItem onClick={save}><SaveOff/> Retirer</DropdownMenuItem>)
+                                        : (<DropdownMenuItem onClick={save}><Save /> Sauvegarder</DropdownMenuItem>)} 
+
                                     </DropdownMenuGroup>
 
                                 </DropdownMenuContent>

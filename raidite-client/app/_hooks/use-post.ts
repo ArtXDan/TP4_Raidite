@@ -51,9 +51,6 @@ export function usePost() {
 
         return x.data;
     }
-
-        
-
         let i = 1;
         for(let f of file.current.files){
          formData.append("image" + i, f); 
@@ -79,13 +76,18 @@ export function usePost() {
 
     async function savePost(postId : number){
 
+    const x = await raidite.post(apiDomain + "api/Posts/SauvegarderPost/" + postId);
+    console.log(x.data);
 
-
+    return (x.data);
     }
 
     async function getSavedPosts(){
 
-        
+        const x = await raidite.get(apiDomain + "api/Posts/GetSavedPosts");
+        console.log(x.data);
+
+        return (x.data);
 
     }
 

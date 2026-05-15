@@ -12,5 +12,8 @@ namespace RaiditeServer.Models
         [ForeignKey(nameof(Comment))]
         public virtual Comment? MainComment { get; set; } // Commentaire principal de l'auteur qui a créé le post
 
+        [InverseProperty("PostsFavoris")]
+        public virtual List<User> PostsFavorisUsers {  get; set; } = new List<User>();
+
     }
 }

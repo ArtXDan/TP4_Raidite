@@ -21,6 +21,9 @@ namespace RaiditeServer.Models
         [InverseProperty("Downvoters")]
         public virtual List<Comment> Downvotes { get; set; } = new List<Comment> { };
 
+        [InverseProperty("PostsFavorisUsers")]
+        public virtual List<Post> PostsFavoris { get; set; } = new List<Post>();
+
         public string? FileName { get; set; } 
         public string? MimeType { get; set; }
     }

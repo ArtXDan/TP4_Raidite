@@ -40,7 +40,7 @@ export default function PostThumbnail(props: { post: Post, showUser: boolean }) 
                                 <Avatar size="sm">
                                     <AvatarImage src={apiDomain + 'api/Users/GetPicture/thumbnail/' + post.mainComment.username} alt="Placeholder" />
                                 </Avatar> :
-                                <img src="/images/hubLogo.png" alt={post.hubName} className="h-[24px] w-[24px] object-cover rounded-full inline" />
+                                <img src={`https://localhost:7127/api/Hubs/GetPicture/` + post.hubId} alt={post.hubName} className="h-[24px] w-[24px] object-cover rounded-full inline" />
                             }
                             
                             <div className="font-bold">{props.showUser ? ('u/' + post.mainComment.username) : ('r/' + post.hubName)} •</div>
@@ -50,15 +50,11 @@ export default function PostThumbnail(props: { post: Post, showUser: boolean }) 
                         <div className="text-sm">{post.mainComment.text.substring(0, Math.min(post.mainComment.text.length, 200))}</div>
                         <CommentStats comment={post.mainComment} />
                     </div>
-                    {/*
-
-                        ⛔ Affichage à utiliser pour la première image (s'il y en a une)
-
+                    
                         <div className="h-[120px]">
-                            <img className="h-full max-w-[150px] object-cover rounded-lg" src="" alt="Miniature" />
+                            {post.mainComment.listeIdsImages?.length > 0 ? (<img className="h-full max-w-[150px] object-cover rounded-lg" src={`https://localhost:7127/api/Posts/GetPicture/thumbnail/` + post.mainComment.listeIdsImages[0]} alt="Miniature" /> ) : null}
                         </div>
 
-                    */}
                 </div>
             }
 
