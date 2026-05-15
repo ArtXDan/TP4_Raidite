@@ -14,7 +14,7 @@ import { apiDomain } from "@/next.config";
 import { Post } from "@/app/_types/post";
 import PostThumbnail from "@/app/_components/post-thumbnail";
 import { usePost } from "@/app/_hooks/use-post";
-
+import { useRouter } from "next/navigation";
 
 
 
@@ -47,17 +47,18 @@ export default function Profile() {
 
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [roles, setRoles] = useState<string[]>([]);
-    
+    const router = useRouter();
 
     useEffect(() => {
-
+        
     async function loadFavoris() {
+        
         try {
             const data = await postAPI.getSavedPosts();
             setPosts(data);
         }
         catch (e) {
-            console.error(e);
+            router.push("/home");
         }
     }
     const roles = sessionStorage.getItem("roles");
