@@ -83,10 +83,11 @@ export default function FullPost() {
 
         // Appeler la requête à partir d'ici
 
-
+    const x = await raidite.delete(apiDomain + "api/Comments/DeletePicture/" + id);
+        console.log(x.data);
         // Mise à jour immédiate de la page
         const newPost = { ...post! };
-        //newPost.mainComment!.IDS_DES_IMAGES = newPost.mainComment!.IDS_DES_IMAGES.filter(p => p != id);
+        newPost.mainComment!.listeIdsImages = newPost.mainComment!.listeIdsImages.filter(p => p != id);
         setPost(newPost);
 
     }
@@ -246,6 +247,32 @@ export default function FullPost() {
         
     }
 
+    function DisplayDelete()
+    {
+        
+        if(post?.mainComment !=null && post?.mainComment.username == username)
+        {
+            return post.mainComment.listeIdsImages?.map(id =>
+
+                                <a key={id} target="_blank" href={apiDomain +'api/Comments/GetPicture/thumbnail/'+ id} className="relative inline-block">
+                                    <div className="text-white bg-black/50 p1 absolute top-0 right-1 z-2" onClick={(e) => { e.preventDefault(); e.stopPropagation(); deletePicture(id) }}><X /></div>
+                                    <img alt="Picture" src={apiDomain + `api/Posts/GetPicture/thumbnail/` + id} className="h-[100px] inline mr-1" />
+                                </a>
+                                
+                            )
+        }
+        else if(post?.mainComment !=null)
+        {
+            return post.mainComment.listeIdsImages?.map(id =>
+
+                                <a key={id} target="_blank" href={apiDomain +'api/Comments/GetPicture/thumbnail/'+ id} className="relative inline-block">
+                                    <img alt="Picture" src={apiDomain + `api/Posts/GetPicture/thumbnail/` + id} className="h-[100px] inline mr-1" />
+                                </a>
+                                
+                            )
+        }
+    }
+
 
     return (
         <div className="flex justify-center">
@@ -290,15 +317,7 @@ export default function FullPost() {
                     }
                     <div className="overflow-x-auto overflow-y-clip w-full whitespace-nowrap mt-1">
                         {/* Ajouté affichage des images */}
-                        {
-                            post.mainComment.listeIdsImages?.map(id =>
-
-                                <a key={id} target="_blank" href={apiDomain +'api/Comments/GetPicture/thumbnail/'+ id} className="relative inline-block">
-                                    <img alt="Picture" src={apiDomain + `api/Posts/GetPicture/thumbnail/` + id} className="h-[100px] inline mr-1" />
-                                </a>
-                                
-                            )
-                        }
+                        {DisplayDelete()}
 
                         {/*
                             Cet élément <a> vous servira pour 🌭-E !
