@@ -223,7 +223,11 @@ export default function FullPost() {
                         {/* Ajouté affichage des images */}
                         {
                             post.mainComment.listeIdsImages?.map(id =>
-                                <img key={id} alt="Picture" src={`https://localhost:7127/api/Posts/GetPicture/thumbnail/` + id} className="h-[100px] inline mr-1" />
+
+                                <a key={id} target="_blank" href={apiDomain +'api/Comments/GetPicture/thumbnail/'+ id} className="relative inline-block">
+                                    <img alt="Picture" src={apiDomain + `api/Posts/GetPicture/thumbnail/` + id} className="h-[100px] inline mr-1" />
+                                </a>
+                                
                             )
                         }
 
