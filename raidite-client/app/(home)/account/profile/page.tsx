@@ -46,6 +46,8 @@ export default function Profile() {
     const moderatorName = useInputBinding("");
 
     const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [roles, setRoles] = useState<string[]>([]);
+    
 
     useEffect(() => {
 
@@ -58,10 +60,17 @@ export default function Profile() {
             console.error(e);
         }
     }
+    const roles = sessionStorage.getItem("roles");
+    if (roles) 
+    {
+       setRoles(JSON.parse(roles));
+    }
 
     loadFavoris();
 
 }, []);
+
+    const estAdmin = roles.includes("administrateur"); 
 
     function previewImage(e : any){
 
@@ -128,7 +137,8 @@ export default function Profile() {
         setFeedback("");
         
         // Glisser le code pour appeler la requête ici !
-
+        const data = await accountAPI.makeModerator(moderatorName.value);
+        console.log(data)
         setFeedback("Modérateur créé.");
 
     }
@@ -159,7 +169,7 @@ export default function Profile() {
                         <TabsTrigger onClick={clearFeedback} value="password">Sécurité</TabsTrigger>
                         <TabsTrigger onClick={clearFeedback} value="saves">Favoris</TabsTrigger>
                         <TabsTrigger onClick={clearFeedback} value="moderator">Modération</TabsTrigger>
-                        <TabsTrigger onClick={clearFeedback} value="admin">Administration</TabsTrigger>
+                        {estAdmin && <TabsTrigger onClick={clearFeedback} value="admin">Administration</TabsTrigger>}
                     </TabsList>
 
                     {/* Avatar */}
@@ -211,12 +221,12 @@ export default function Profile() {
                     </TabsContent>
 
                     {/* Administration */}
-                    <TabsContent value="admin" className="pt-2 flex flex-col gap-2">
+                    {estAdmin && <TabsContent value="admin" className="pt-2 flex flex-col gap-2">
                         <input {...moderatorName} type="text" placeholder="Nom d'utilisateur" className="border-gray-300 border-1 p-2 rounded-xl w-full outline-none" />
                         <div className="flex">
                             <OrangeButton fct={makeModerator}>Ajouter le modérateur</OrangeButton>
                         </div>
-                    </TabsContent>
+                    </TabsContent>}
 
                 </Tabs>
                 {feedback != "" &&

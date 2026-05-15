@@ -24,7 +24,7 @@ namespace RaiditeServer.Data
             new IdentityRole { Id = "1", Name = "administrateur", NormalizedName = "ADMINISTRATEUR" }
     );
 
-            // Deux utilisateurs 
+            // Trois utilisateurs 
             PasswordHasher<User> hasher = new PasswordHasher<User>();
 
             User u1 = new User

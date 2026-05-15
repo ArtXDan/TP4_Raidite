@@ -163,14 +163,14 @@ namespace RaiditeServer.Controllers
         }
 
         [HttpPut("{username}")]
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> MakeRedactor(string username)
+        [Authorize(Roles = "administrateur")]
+        public async Task<IActionResult> MakeModerator(string username)
         {
             User? newAdmin = await _userManager.FindByNameAsync(username);
             if (newAdmin == null) return NotFound(new { Message = "Cet utilisateur n'existe pas" });
 
-            await _userManager.AddToRoleAsync(newAdmin, "admin");
-            return Ok(new { Message = username = " est maintenant admin!" });
+            await _userManager.AddToRoleAsync(newAdmin, "administrateur");
+            return Ok(new { Message = username + " est maintenant admin!" });
 
         }
     }

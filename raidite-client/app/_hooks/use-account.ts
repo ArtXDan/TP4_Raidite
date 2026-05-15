@@ -27,6 +27,8 @@ export function useAccount(){
         sessionStorage.setItem("token", x.data.token);
         sessionStorage.setItem("username", x.data.username);
         sessionStorage.setItem("roles", JSON.stringify(x.data.roles));
+
+        
         return x.data;
 
     }
@@ -61,9 +63,8 @@ export function useAccount(){
     }
 
     async function makeModerator(username : string){
-
-
-
+      const x = await raidite.put(apiDomain + "api/Users/MakeModerator/" + username)
+      console.log(x.data)
     }
 
     return { register, login, logout, changeAvatar, changePassword, makeModerator };
