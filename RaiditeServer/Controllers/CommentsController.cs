@@ -144,7 +144,25 @@ namespace RaiditeServer.Controllers
         }
 
 
-        
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeletePicture(int id)
+        {
+            User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (user == null) return BadRequest(new { Message = "Pas connecté" });
+
+            Picture? image = await _context.Picture.FindAsync(id);
+            if (image == null) return NotFound(new { Message = "Aucune image trouvée avec cet id." });
+
+            // Supprimer toutes les éventuelles tailles existantes du disque
+            System.IO.File.Delete(Directory.GetCurrentDirectory() + "/images/full/" + image.FileName);
+            System.IO.File.Delete(Directory.GetCurrentDirectory() + "/images/thumbnail/" + image.FileName);
+
+            _context.Picture.Remove(image);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
 
 
 

@@ -10,6 +10,7 @@ import { useComment } from "../_hooks/use-comment";
 import { AccountContext } from "../(home)/layout";
 import { useRouter } from "next/navigation";
 import { apiDomain } from "@/next.config";
+import { raidite } from "../raidite-interceptor";
 
 export default function CommentBox(props: { comment: Comment, isSubComment: boolean, showSubComments: boolean }) {
 
@@ -69,11 +70,12 @@ export default function CommentBox(props: { comment: Comment, isSubComment: bool
 
         // Requête pour supprimer l'image appelée ici !
 
-
+        const x = await raidite.delete(apiDomain + "api/Comments/DeletePicture/" + id);
+        console.log(x.data);
 
         // Code pour retirer immédiatement l'image de la page
         const newComment = { ...comment };
-        //newComment.IDS_DES_IMAGES = newComment.IDS_DES_IMAGES.filter(p => p != id);
+        newComment.listeIdsImages = newComment.listeIdsImages.filter(p => p != id);
         setComment(newComment);
 
     }
@@ -176,9 +178,18 @@ export default function CommentBox(props: { comment: Comment, isSubComment: bool
                                 /*⛔ À compléter pour l'affichage des images*/
 
                                 comment.listeIdsImages?.map((i) => 
-                                <a key={i} target="_blank" href={apiDomain +'api/Comments/GetPicture/thumbnail/'+ i} className="relative inline-block">
-                                    <img src={ apiDomain +'api/Comments/GetPicture/thumbnail/'+ i}  alt="Image" className="h-[100px] inline mr-1" />
-                                </a>
+
+
+                              
+                                    
+                                    <a key={i} target="_blank" href={apiDomain +'api/Comments/GetPicture/thumbnail/'+ i} className="relative inline-block">
+                                    <div  className="text-white bg-black/50 p1 absolute top-0 right-1 z-2" onClick={(e) => { e.preventDefault(); e.stopPropagation(); deletePicture(i) }}>
+                                    <X />
+                                    </div>
+                                        <img src={ apiDomain +'api/Comments/GetPicture/thumbnail/'+ i}  alt="Image" className="h-[100px] inline mr-1" />
+                                    </a>  
+                                
+                                
                                 
                             
                             )
