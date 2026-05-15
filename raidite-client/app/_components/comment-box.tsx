@@ -45,7 +45,7 @@ export default function CommentBox(props: { comment: Comment, isSubComment: bool
 
     }
 
-    async function report() {
+    async function report(id : number) {
 
         // Pas connecté ? Connecte-toi !
         if (!loggedIn) {
@@ -57,7 +57,8 @@ export default function CommentBox(props: { comment: Comment, isSubComment: bool
 
         // Requête pour signaler appelée ici !
 
-
+        const x = await raidite.put(apiDomain + "api/Comments/SignalerCommentaire/" + id);
+        console.log(x.data);
 
         setFeedback("Signalement complété.");
 
@@ -145,6 +146,74 @@ export default function CommentBox(props: { comment: Comment, isSubComment: bool
         }
     }
 
+    function DisplayReport()
+    {
+        if(comment.username == username)
+        {
+            return <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <button className="p-1 rounded-full cursor-pointer bg-gray-200 hover:bg-gray-300 focus:outline-none"><Ellipsis className="h-[20px]" /></button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-fit" align="end">
+                                        <DropdownMenuGroup className="[&>*]:cursor-pointer">
+
+                                            {/* ↓ Les trois options sont ci-dessous ↓ */}
+
+                                            
+                                            {comment.isAuthor && <DropdownMenuItem onClick={() => setToggleEdit(!toggleEdit)}><SquarePen />Modifier</DropdownMenuItem>}
+                                            <DropdownMenuItem onClick={deleteComment}><Trash2 />Supprimer</DropdownMenuItem>
+                                            
+
+                                        </DropdownMenuGroup>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+        }
+        if(!loggedIn)
+        {
+            return <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <button className="p-1 rounded-full cursor-pointer bg-gray-200 hover:bg-gray-300 focus:outline-none"><Ellipsis className="h-[20px]" /></button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-fit" align="end">
+                                        <DropdownMenuGroup className="[&>*]:cursor-pointer">
+
+                                            {/* ↓ Les trois options sont ci-dessous ↓ */}
+
+                                            
+                                            {comment.isAuthor && <DropdownMenuItem onClick={() => setToggleEdit(!toggleEdit)}><SquarePen />Modifier</DropdownMenuItem>}
+                                            <DropdownMenuItem onClick={deleteComment}><Trash2 />Supprimer</DropdownMenuItem>
+                                            <a href="http://localhost:3000/account/login"><DropdownMenuItem><Flag />Signaler</DropdownMenuItem></a>
+
+                                        </DropdownMenuGroup>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+            
+            
+        }
+        else
+        {
+            return <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <button className="p-1 rounded-full cursor-pointer bg-gray-200 hover:bg-gray-300 focus:outline-none"><Ellipsis className="h-[20px]" /></button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-fit" align="end">
+                                        <DropdownMenuGroup className="[&>*]:cursor-pointer">
+
+                                            {/* ↓ Les trois options sont ci-dessous ↓ */}
+
+                                            
+                                            {comment.isAuthor && <DropdownMenuItem onClick={() => setToggleEdit(!toggleEdit)}><SquarePen />Modifier</DropdownMenuItem>}
+                                            <DropdownMenuItem onClick={deleteComment}><Trash2 />Supprimer</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() =>report(comment.id)}><Flag />Signaler</DropdownMenuItem>
+
+                                        </DropdownMenuGroup>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+            
+            
+            
+        }
+    }
 
     return (
 
@@ -233,22 +302,7 @@ export default function CommentBox(props: { comment: Comment, isSubComment: bool
                                 </div>
 
                                 {/* Menu déroulant pour modifier / supprimer / signaler */}
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <button className="p-1 rounded-full cursor-pointer bg-gray-200 hover:bg-gray-300 focus:outline-none"><Ellipsis className="h-[20px]" /></button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent className="w-fit" align="end">
-                                        <DropdownMenuGroup className="[&>*]:cursor-pointer">
-
-                                            {/* ↓ Les trois options sont ci-dessous ↓ */}
-
-                                            {comment.isAuthor && <DropdownMenuItem onClick={() => setToggleEdit(!toggleEdit)}><SquarePen />Modifier</DropdownMenuItem>}
-                                            <DropdownMenuItem onClick={deleteComment}><Trash2 />Supprimer</DropdownMenuItem>
-                                            <DropdownMenuItem onClick={report}><Flag />Signaler</DropdownMenuItem>
-
-                                        </DropdownMenuGroup>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
+                                {DisplayReport()}
 
                                 {toggleEdit &&
                                     <button className="bg-orange-600 hover:bg-orange-700 text-white p-1 px-2 cursor-pointer text-sm rounded-full" onClick={edit}>Modifier</button>

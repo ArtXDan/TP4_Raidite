@@ -45,6 +45,23 @@ namespace RaiditeServer.Controllers
             return File(bytes, pic.MimeType);
         }
 
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<ActionResult> SignalerCommentaire(int id)
+        {
+            User? user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (user == null) return NotFound();
+
+            Comment commentaire = await _commentService.GetComment(id);
+            if (commentaire == null) return NotFound();
+            if(commentaire.User == user) return BadRequest(new { Message = "Impossible de signalé sont propre commentaire" });
+
+            commentaire.EstSignale = true;
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
         // Créer un nouveau commentaire. (Ne permet pas de créer le commentaire principal d'un post, pour cela,
         // voir l'action PostPost dans PostsController)
         [HttpPost("{parentCommentId}")]

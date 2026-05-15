@@ -32,6 +32,8 @@ namespace RaiditeServer.Models
         public virtual List<Picture>? Pictures { get; set; } = new List<Picture>();
         public virtual List<int> ListeIdsImages { get; set; } = new List<int> { };
 
+        public virtual bool EstSignale { get; set; } = false;
+
         public int GetSubCommentTotal()
         {
             SubComments ??= new List<Comment>();

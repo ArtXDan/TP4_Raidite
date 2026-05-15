@@ -15,6 +15,7 @@ import { apiDomain } from "@/next.config";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useComment } from "@/app/_hooks/use-comment";
 import { AccountContext } from "../../layout";
+import { raidite } from "@/app/raidite-interceptor";
 
 export const PostContext = createContext<any>(null);
 
@@ -128,7 +129,13 @@ export default function FullPost() {
         setFeedback("");
 
         // Appeler la requête à partir d'ici
+        if(post?.mainComment!=null)
+            {
+                const x = await raidite.put(apiDomain + "api/Comments/SignalerCommentaire/" + post?.mainComment.id);
+                console.log(x.data);
+            }
 
+        
 
 
         setFeedback("Signalement complété");
@@ -160,6 +167,86 @@ export default function FullPost() {
 
     }
 
+    function DisplayReport()
+    {
+        if(post != null&& post.mainComment!= null)
+            {
+               if(post?.mainComment?.username == username)
+                {
+                     return <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button className="p-2 rounded-full cursor-pointer hover:bg-gray-200 focus:outline-none"><Ellipsis /></button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-fit" align="end">
+
+                                    {/* Menu déroulant pour modifier, supprimer, signaler et sauvegarder la publication */}
+                                    <DropdownMenuGroup className="[&>*]:cursor-pointer">
+                                        {post.mainComment.isAuthor && <DropdownMenuItem onClick={() => setToggleEdit(!toggleEdit)}><SquarePen />Modifier</DropdownMenuItem>}
+                                        {post.mainComment.isAuthor && (<DropdownMenuItem onClick={deletePost}><Trash2 />Supprimer</DropdownMenuItem>)}
+                                        
+
+                                        {post.isSaved ? (<DropdownMenuItem onClick={save}><SaveOff/> Retirer</DropdownMenuItem>)
+                                        : (<DropdownMenuItem onClick={save}><Save /> Sauvegarder</DropdownMenuItem>)} 
+
+                                    </DropdownMenuGroup>
+
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                }
+                if(!loggedIn)
+                {
+                   return <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button className="p-2 rounded-full cursor-pointer hover:bg-gray-200 focus:outline-none"><Ellipsis /></button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-fit" align="end">
+
+                                    {/* Menu déroulant pour modifier, supprimer, signaler et sauvegarder la publication */}
+                                    <DropdownMenuGroup className="[&>*]:cursor-pointer">
+                                        {post.mainComment.isAuthor && <DropdownMenuItem onClick={() => setToggleEdit(!toggleEdit)}><SquarePen />Modifier</DropdownMenuItem>}
+                                        {post.mainComment.isAuthor && (<DropdownMenuItem onClick={deletePost}><Trash2 />Supprimer</DropdownMenuItem>)}
+                                        <a href="http://localhost:3000/account/login"><DropdownMenuItem><Flag />Signaler</DropdownMenuItem></a>
+
+                                        {post.isSaved ? (<DropdownMenuItem onClick={save}><SaveOff/> Retirer</DropdownMenuItem>)
+                                        : (<DropdownMenuItem onClick={save}><Save /> Sauvegarder</DropdownMenuItem>)} 
+
+                                    </DropdownMenuGroup>
+
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+            
+            
+                }
+                else
+                {
+                  return <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button className="p-2 rounded-full cursor-pointer hover:bg-gray-200 focus:outline-none"><Ellipsis /></button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-fit" align="end">
+
+                                    {/* Menu déroulant pour modifier, supprimer, signaler et sauvegarder la publication */}
+                                    <DropdownMenuGroup className="[&>*]:cursor-pointer">
+                                        {post.mainComment.isAuthor && <DropdownMenuItem onClick={() => setToggleEdit(!toggleEdit)}><SquarePen />Modifier</DropdownMenuItem>}
+                                        {post.mainComment.isAuthor && (<DropdownMenuItem onClick={deletePost}><Trash2 />Supprimer</DropdownMenuItem>)}
+                                        <DropdownMenuItem onClick={report}><Flag />Signaler</DropdownMenuItem>
+
+                                        {post.isSaved ? (<DropdownMenuItem onClick={save}><SaveOff/> Retirer</DropdownMenuItem>)
+                                        : (<DropdownMenuItem onClick={save}><Save /> Sauvegarder</DropdownMenuItem>)} 
+
+                                    </DropdownMenuGroup>
+
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+            
+            
+            
+                } 
+            }
+        
+    }
+
+
     return (
         <div className="flex justify-center">
             <div className="w-[36px] mt-4.5">
@@ -188,25 +275,7 @@ export default function FullPost() {
                         <div className="flex-1"></div>
 
                         <div>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <button className="p-2 rounded-full cursor-pointer hover:bg-gray-200 focus:outline-none"><Ellipsis /></button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-fit" align="end">
-
-                                    {/* Menu déroulant pour modifier, supprimer, signaler et sauvegarder la publication */}
-                                    <DropdownMenuGroup className="[&>*]:cursor-pointer">
-                                        {post.mainComment.isAuthor && <DropdownMenuItem onClick={() => setToggleEdit(!toggleEdit)}><SquarePen />Modifier</DropdownMenuItem>}
-                                        {post.mainComment.isAuthor && (<DropdownMenuItem onClick={deletePost}><Trash2 />Supprimer</DropdownMenuItem>)}
-                                        <DropdownMenuItem onClick={report}><Flag />Signaler</DropdownMenuItem>
-
-                                        {post.isSaved ? (<DropdownMenuItem onClick={save}><SaveOff/> Retirer</DropdownMenuItem>)
-                                        : (<DropdownMenuItem onClick={save}><Save /> Sauvegarder</DropdownMenuItem>)} 
-
-                                    </DropdownMenuGroup>
-
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                            {DisplayReport()}
                         </div>
                     </div>
                     <div className="text-2xl font-bold">{post.title}</div>
