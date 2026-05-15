@@ -122,6 +122,30 @@ export default function CommentBox(props: { comment: Comment, isSubComment: bool
 
     }
 
+    function DisplayDelete()
+    {
+        if(comment.username == username)
+        {
+            return comment.listeIdsImages?.map((i) => 
+                                    <a key={i} target="_blank" href={apiDomain +'api/Comments/GetPicture/thumbnail/'+ i} className="relative inline-block">
+                                    <div  className="text-white bg-black/50 p1 absolute top-0 right-1 z-2" onClick={(e) => { e.preventDefault(); e.stopPropagation(); deletePicture(i) }}>
+                                    <X />
+                                    </div>
+                                        <img src={ apiDomain +'api/Comments/GetPicture/thumbnail/'+ i}  alt="Image" className="h-[100px] inline mr-1" />
+                                    </a>  
+                                )
+        }
+        else
+        {
+            return comment.listeIdsImages?.map((i) => 
+                                    <a key={i} target="_blank" href={apiDomain +'api/Comments/GetPicture/thumbnail/'+ i} className="relative inline-block">
+                                        <img src={ apiDomain +'api/Comments/GetPicture/thumbnail/'+ i}  alt="Image" className="h-[100px] inline mr-1" />
+                                    </a>  
+                                )
+        }
+    }
+
+
     return (
 
         <div className="mt-5 flex gap-2 relative">
@@ -177,22 +201,7 @@ export default function CommentBox(props: { comment: Comment, isSubComment: bool
                             {
                                 /*⛔ À compléter pour l'affichage des images*/
 
-                                comment.listeIdsImages?.map((i) => 
-
-
-                              
-                                    
-                                    <a key={i} target="_blank" href={apiDomain +'api/Comments/GetPicture/thumbnail/'+ i} className="relative inline-block">
-                                    <div  className="text-white bg-black/50 p1 absolute top-0 right-1 z-2" onClick={(e) => { e.preventDefault(); e.stopPropagation(); deletePicture(i) }}>
-                                    <X />
-                                    </div>
-                                        <img src={ apiDomain +'api/Comments/GetPicture/thumbnail/'+ i}  alt="Image" className="h-[100px] inline mr-1" />
-                                    </a>  
-                                
-                                
-                                
-                            
-                            )
+                                DisplayDelete()
                             }
 
                             {/* 
