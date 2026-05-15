@@ -4,7 +4,7 @@ import OrangeButton from "@/app/_components/_mini-components/orange-button";
 import { useAccount } from "@/app/_hooks/use-account";
 import useInputBinding from "@/app/_hooks/use-input-binding";
 import { AccountContext } from "../../layout";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Login() {
@@ -20,7 +20,17 @@ export default function Login() {
     const name = useInputBinding("");
     const pass = useInputBinding("");
     const [error, setError] = useState<string>("");
+    const [roles, setRoles] = useState<string[]>([]);
 
+    useEffect(() => {
+
+    const roles = sessionStorage.getItem("roles");
+    if (roles) 
+    {
+       setRoles(JSON.parse(roles));
+    }
+    }, []);
+    
     // Tentative de connexion
     async function tryConnect() {
 
@@ -33,6 +43,7 @@ export default function Login() {
             // Mise à jour du AccountContext
             setLoggedIn(true);
             setUsername(data.username);
+            setRoles(data.roles);
 
             // Retour vers la page d'accueil une fois connecté
             router.push("/");
