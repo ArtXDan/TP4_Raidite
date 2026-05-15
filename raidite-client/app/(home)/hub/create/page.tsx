@@ -45,6 +45,27 @@ export default function CreateHub() {
             setError("Une erreur est survenue. Un forum avec ce nom existe peut-être déjà ?");
         }
 
+        
+
+    
+
+}
+    const [imageBlob, setImageBlob] = useState<string | null>(null);
+    function previewImage(e : any){
+
+    // S'il y a bel et bien une image dans l'input
+    if(e.target.files && e.target.files[0]){
+
+        // Si nous étions déjà en train de prévisualiser l'image, supprimer l'ancienne version
+        // pour ne pas avoir de fuite de mémoire.
+        if (imageBlob) {
+            URL.revokeObjectURL(imageBlob);
+        }
+
+        // Afficher le fichier dans l'élément <img> de la page dont src={imageBlob}
+        setImageBlob(URL.createObjectURL(e.target.files[0]));
+    }
+
     }
 
     return (
@@ -59,9 +80,8 @@ export default function CreateHub() {
                     <div className="text-sm text-red-600 mb-2">{error}</div>
                     <div className={'text-sm pr-3 ' + (title.value.length <= 15 ? 'text-gray-600' : 'text-red-600')}>{title.value.length}/15</div>
                 </div>
-                
-                    <img src="/images/avatarPlaceholder.png" alt="Icône choisie" className="rounded-lg mb-2 m-auto h-[200px]" />
-                    <input className="bg-gray-100 p-3 px-4 rounded-2xl mb-3 w-full text-gray-500" type="file" ref={myFileInput} accept="images/*" />
+                {imageBlob != null && <img src={imageBlob} alt="Icône choisie" className="rounded-lg mb-2 m-auto h-[200px]" />} 
+                    <input className="bg-gray-100 p-3 px-4 rounded-2xl mb-3 w-full text-gray-500" type="file" ref={myFileInput} onChange={previewImage} accept="images/*" />
                 
                 <div className="[&>*]:w-full">
                     <OrangeButton fct={tryCreateHub}>Créer le forum</OrangeButton>
